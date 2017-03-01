@@ -6,7 +6,7 @@
 ## ---- arguments ----
 args <- commandArgs(trailingOnly = TRUE)
 
-message("Executing train_test_split.R with arguments:")
+message("Executing features.R with arguments:")
 message(paste(args, collapse = "\n"))
 
 features_conf <- args[[1]]
@@ -20,13 +20,14 @@ library("plyr")
 library("dplyr")
 library("jsonlite")
 library("feather")
-source("../utils/feature_funs.R")
+source("src/utils/feature_funs.R")
 
 ## ---- read-input ----
 melted_counts <- read_feather(melted_counts_path)
 cv_data <- read_feather(cv_data_path)
 phyloseq_object <- readRDS(ps_path)
 opts <- read_json(features_conf)
+print(opts)
 
 ## ---- create-features ----
 for (k in seq_len(max(cv_data$fold, na.rm = TRUE))) {
@@ -41,8 +42,9 @@ for (k in seq_len(max(cv_data$fold, na.rm = TRUE))) {
     if (is.null(x)) {
       x <- new_x
     } else {
-      x <- cbind(x, new_x)
+      x <- x %>%
+        full_join(new_x)
     }
   }
-  write_feather(x, sprintf("%s-%s.feather", output_name, k))
+  write_feather(x, sprintf("%s-%s.feather", output_path, k))
 }
