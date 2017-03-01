@@ -21,7 +21,7 @@ library("phyloseq")
 ps <- readRDS(ps_path)
 m_x <- get_taxa(ps) %>%
   melt(
-    varnames = c("sample", "rsv"),
+    varnames = c("Meas_ID", "rsv"),
     value.name = "count"
   )
 

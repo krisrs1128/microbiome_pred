@@ -95,8 +95,8 @@ class MeltCounts(luigi.Task):
                 os.path.join(
                     pf.rscript_dir(project_dir), "melt_counts.R"
                 ),
-                output_name,
                 self.input().open("r").name,
+                output_name
             ]
         )
 

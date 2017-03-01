@@ -39,8 +39,8 @@ folds <- sample(
   N_train,
   replace = TRUE
 )
-mx$folds <- NA
-mx[!mx$validation, ]$folds <- folds
+mx$fold <- NA
+mx[!mx$validation, ]$fold <- folds
 
 ## ---- write-output ----
 write_feather(mx, output_path)
