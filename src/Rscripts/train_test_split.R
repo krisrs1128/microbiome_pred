@@ -11,8 +11,8 @@ message(paste(args, collapse = "\n"))
 
 melted_counts_path <- args[[1]]
 output_path <- args[[2]]
-validation_prop <- args[[3]]
-k_folds <- args[[4]]
+validation_prop <- as.numeric(args[[3]])
+k_folds <- as.integer(args[[4]])
 
 ## ---- libraries ----
 library("feather")
