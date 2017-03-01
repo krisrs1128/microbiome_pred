@@ -1,0 +1,10 @@
+{
+    "exper_1": {
+        "id": 1,
+        "preprocessing": "conf/variance_filter.json"
+    },
+    "exper_2": {
+        "id": 2,
+        "preprocessing": "conf/variance_filter.json"
+    }
+}
