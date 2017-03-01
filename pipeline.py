@@ -2,7 +2,7 @@ import luigi
 from luigi import configuration
 import os.path
 import json
-from src.train_test_split import TrainTestSplit
+from src.features import GetFeatures
 
 import logging
 import logging.config
@@ -32,11 +32,12 @@ class MicrobiomePred(luigi.WrapperTask):
         tasks = []
         for k in exper.keys():
             tasks.append(
-                TrainTestSplit(
+                GetFeatures(
                     ps_path,
                     exper[k]["preprocessing"],
                     str(exper[k]["validation_prop"]),
-                    str(exper[k]["k_folds"])
+                    str(exper[k]["k_folds"]),
+                    exper[k]["features"]
                 )
             )
 
