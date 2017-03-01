@@ -15,11 +15,11 @@ output_path <- args[[3]]
 ## ---- libraries ----
 library("phyloseq")
 library("jsonlite")
-source("../utils/preprocess_counts_funs.R")
+source("src/utils/preprocess_counts_funs.R")
 
 ## ---- read-input ----
 ps <- readRDS(ps_path)
-opts <- fromJSON(preprocess_conf)
+opts <- read_json(preprocess_conf)
 
 ## ---- apply-opts ----
 for (i in seq_along(opts)) {
@@ -29,4 +29,4 @@ for (i in seq_along(opts)) {
 }
 
 ## ---- write-output ----
-writeRDS(ps, output_path)
+saveRDS(ps, output_path)
