@@ -2,7 +2,7 @@ import luigi
 from luigi import configuration
 import os.path
 import json
-from src.etl import MeltCounts
+from src.train_test_split import TrainTestSplit
 
 import logging
 import logging.config
@@ -32,10 +32,16 @@ class MicrobiomePred(luigi.WrapperTask):
         tasks = []
         for k in exper.keys():
             tasks.append(
-                MeltCounts(ps_path, exper[k]["preprocessing"])
+                TrainTestSplit(
+                    ps_path,
+                    exper[k]["preprocessing"],
+                    str(exper[k]["validation_prop"]),
+                    str(exper[k]["k_folds"])
+                )
             )
 
         return tasks
+
 
 if __name__ == "__main__":
     luigi.run()
