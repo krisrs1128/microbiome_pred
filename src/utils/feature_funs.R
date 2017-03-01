@@ -11,14 +11,25 @@ library("phyloseq")
 
 ## ---- functions ----
 feature_fun_generator <- function(f, melted_counts, cv_data, phyloseq_object) {
-  function(validation_flag, leave_out_fold = NULL) {
-    ## filter to current indices
-    subset_counts <- cv_data %>%
-      filter(validation == validation_flag)
-    print(leave_out_fold)
-    if (!is.null(leave_out_fold)) {
-      subset_counts <- subset_counts %>%
-          filter(fold != leave_out_fold)
+  function(test_flag, leave_out_fold = "all") {
+    if (leave_out_fold == "all") {
+      ## case that we are looking at global train / test
+      subset_counts <- cv_data %>%
+        filter(validation == test_flag)
+    } else if (test_flag) {
+      ## case that we are looking at cv test set within global train
+      subset_counts <- cv_data %>%
+        filter(
+          !validation,
+          k == leave_out_fold
+        )
+    } else {
+      ## case that we are looking at cv train set within global train
+      subset_counts <- cv_data %>%
+        filter(
+          !validation,
+          k != leave_out_fold
+        )
     }
 
     f(subset_counts, phyloseq_object)

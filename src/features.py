@@ -88,10 +88,7 @@ class GetFeatures(luigi.Task):
 
         outputs = []
         for k in ["all"] + list(range(1, int(self.k_folds) + 1)):
-            for v in ["training", "validation"]:
-                if v == "validation" and k != "all":
-                    continue
-
+            for v in ["train", "test"]:
                 outputs.append(
                     luigi.LocalTarget(
                         output_name + "-" + str(v) + "-" + str(k) + ".feather"

@@ -29,17 +29,16 @@ phyloseq_object <- readRDS(ps_path)
 opts <- read_json(features_conf)
 
 ## ---- create-features ----
-for (k in c(list(NULL), seq_len(max(cv_data$fold, na.rm = TRUE)))) {
-  for (validation_flag in c(TRUE, FALSE)) {
-    if (validation_flag & !is.null(k)) next ## there are no cv folds on the test set
+for (k in c("all", seq_len(max(cv_data$fold, na.rm = TRUE)))) {
+  for (test_flag in c(TRUE, FALSE)) {
 
     x <- NULL
     for (i in seq_along(opts)) {
       f <- get(names(opts)[[i]])
       cv_f <- feature_fun_generator(f, melted_counts, cv_data, phyloseq_object)
 
-      validation_indicator <- ifelse(validation_flag, "validation", "training")
-      new_x <- do.call(cv_f, c(list(validation_flag, k), opts[[i]]))
+      test_indic <- ifelse(test_flag, "test", "train")
+      new_x <- do.call(cv_f, c(list(test_flag, k), opts[[i]]))
 
       if (is.null(x)) {
         x <- new_x
@@ -49,7 +48,6 @@ for (k in c(list(NULL), seq_len(max(cv_data$fold, na.rm = TRUE)))) {
       }
     }
 
-    write_k <- ifelse(is.null(k), "all", k)
-    write_feather(x, sprintf("%s-%s-%s.feather", output_path, validation_indicator, write_k))
+    write_feather(x, sprintf("%s-%s-%s.feather", output_path, test_indic, k))
   }
 }
