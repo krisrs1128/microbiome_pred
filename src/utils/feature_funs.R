@@ -11,13 +11,15 @@ library("phyloseq")
 
 ## ---- functions ----
 feature_fun_generator <- function(f, melted_counts, cv_data, phyloseq_object) {
-  function(validation_flag, leave_out_fold) {
+  function(validation_flag, leave_out_fold = NULL) {
     ## filter to current indices
     subset_counts <- cv_data %>%
-      filter(
-        validation == validation_flag,
-        fold != leave_out_fold
-      )
+      filter(validation == validation_flag)
+    print(leave_out_fold)
+    if (!is.null(leave_out_fold)) {
+      subset_counts <- subset_counts %>%
+          filter(fold != leave_out_fold)
+    }
 
     f(subset_counts, phyloseq_object)
   }
@@ -33,4 +35,3 @@ cc_relday <- function(melted_counts, phyloseq_object) {
     select(Meas_ID, rsv, CC_RelDay) %>%
     rename(relative_day = CC_RelDay)
 }
-
