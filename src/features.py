@@ -62,9 +62,6 @@ class GetFeatures(luigi.Task):
             self.features_conf
         )
 
-        logger.info(self.features_conf)
-        logger.info(self.input()[0].open("r").name)
-
         return_code = subprocess.call(
             [
                 "Rscript",
@@ -90,9 +87,15 @@ class GetFeatures(luigi.Task):
         )
 
         outputs = []
-        for k in range(1, int(self.k_folds)):
-            outputs.append(
-               luigi.LocalTarget(output_name + "-" + str(k) + ".feather")
-            )
+        for k in ["all"] + list(range(1, int(self.k_folds) + 1)):
+            for v in ["training", "validation"]:
+                if v == "validation" and k != "all":
+                    continue
+
+                outputs.append(
+                    luigi.LocalTarget(
+                        output_name + "-" + str(v) + "-" + str(k) + ".feather"
+                    )
+                )
 
         return outputs
