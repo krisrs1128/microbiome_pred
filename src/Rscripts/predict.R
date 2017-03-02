@@ -1,8 +1,7 @@
 #! /usr/bin/env Rscript
 
 ## File description -------------------------------------------------------------
-## R script for training models on featurized data. We assume cv has been
-## considered elsewhere.
+## R script for obtaining predictions from trained models.
 
 ## ---- arguments ----
 args <- commandArgs(trailingOnly = TRUE)
