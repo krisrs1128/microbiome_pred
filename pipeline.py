@@ -2,7 +2,7 @@ import luigi
 from luigi import configuration
 import os.path
 import json
-from src.predict import Predict
+from src.cv_eval import CVEval
 
 import logging
 import logging.config
@@ -33,14 +33,15 @@ class MicrobiomePred(luigi.WrapperTask):
         for i in exper.keys():
             for k in range(1, exper[i]["k_folds"] + 1):
                 tasks.append(
-                    Predict(
+                    CVEval(
                         ps_path,
                         exper[i]["preprocessing"],
-                        exper[i]["validation_prop"],
-                        exper[i]["k_folds"],
+                        str(exper[i]["validation_prop"]),
+                        str(exper[i]["k_folds"]),
                         exper[i]["features"],
                         exper[i]["model"],
-                        str(k)
+                        str(k),
+                        exper[i]["metrics"]
                     )
                 )
 
