@@ -57,3 +57,11 @@ def rscript_file(conf, script):
     project_dir = conf.get("paths", "project_dir")
     return os.path.join(rscript_dir(project_dir), script)
 
+
+def output_name(conf, specifiers_list, prefix):
+    project_dir = conf.get("paths", "project_dir")
+    id_string = "".join([str(s) for s in specifiers_list])
+    return processed_data_dir(
+        project_dir,
+        prefix + hash_name(id_string)
+    )
