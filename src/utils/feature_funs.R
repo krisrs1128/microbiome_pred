@@ -20,15 +20,15 @@ feature_fun_generator <- function(f, melted_counts, cv_data, phyloseq_object) {
       ## case that we are looking at cv test set within global train
       subset_counts <- cv_data %>%
         filter(
-          !validation,
-          k == leave_out_fold
+          validation != TRUE,
+          fold == leave_out_fold
         )
     } else {
       ## case that we are looking at cv train set within global train
       subset_counts <- cv_data %>%
         filter(
-          !validation,
-          k != leave_out_fold
+          validation != TRUE,
+          fold != leave_out_fold
         )
     }
 
