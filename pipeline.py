@@ -2,7 +2,7 @@ import luigi
 from luigi import configuration
 import os.path
 import json
-from src.train import Train
+from src.predict import Predict
 
 import logging
 import logging.config
@@ -33,7 +33,7 @@ class MicrobiomePred(luigi.WrapperTask):
         for i in exper.keys():
             for k in range(1, exper[i]["k_folds"] + 1):
                 tasks.append(
-                    Train(
+                    Predict(
                         ps_path,
                         exper[i]["preprocessing"],
                         exper[i]["validation_prop"],
