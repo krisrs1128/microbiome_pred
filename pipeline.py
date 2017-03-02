@@ -2,8 +2,7 @@ import luigi
 from luigi import configuration
 import os.path
 import json
-from src.features import GetFeatures
-from src.response import GetResponse
+from src.train import Train
 
 import logging
 import logging.config
@@ -31,24 +30,19 @@ class MicrobiomePred(luigi.WrapperTask):
             exper = json.load(f)
 
         tasks = []
-        for k in exper.keys():
-            tasks.append(
-                GetFeatures(
-                    ps_path,
-                    exper[k]["preprocessing"],
-                    str(exper[k]["validation_prop"]),
-                    str(exper[k]["k_folds"]),
-                    exper[k]["features"]
+        for i in exper.keys():
+            for k in range(1, exper[i]["k_folds"] + 1):
+                tasks.append(
+                    Train(
+                        ps_path,
+                        exper[i]["preprocessing"],
+                        exper[i]["validation_prop"],
+                        exper[i]["k_folds"],
+                        exper[i]["features"],
+                        exper[i]["model"],
+                        str(k)
+                    )
                 )
-            )
-            tasks.append(
-                GetResponse(
-                    ps_path,
-                    exper[k]["preprocessing"],
-                    str(exper[k]["validation_prop"]),
-                   str(exper[k]["k_folds"])
-                )
-            )
 
         return tasks
 
