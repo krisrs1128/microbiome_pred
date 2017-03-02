@@ -3,6 +3,7 @@ from luigi import configuration
 import os.path
 import json
 from src.features import GetFeatures
+from src.response import GetResponse
 
 import logging
 import logging.config
@@ -38,6 +39,14 @@ class MicrobiomePred(luigi.WrapperTask):
                     str(exper[k]["validation_prop"]),
                     str(exper[k]["k_folds"]),
                     exper[k]["features"]
+                )
+            )
+            tasks.append(
+                GetResponse(
+                    ps_path,
+                    exper[k]["preprocessing"],
+                    str(exper[k]["validation_prop"]),
+                   str(exper[k]["k_folds"])
                 )
             )
 
