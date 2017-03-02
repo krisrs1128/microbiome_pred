@@ -34,7 +34,7 @@ class TrainTestSplit(luigi.Task):
                 "Rscript",
                 pf.rscript_file(self.conf, "train_test_split.R"),
                 self.input().open("r").name,
-                pf.output_name(self.conf, specifiers_list, "cv_"),
+                pf.output_name(self.conf, specifiers_list, "cv_") + ".feather",
                 self.validation_prop,
                 self.k_folds
             ]
@@ -49,6 +49,6 @@ class TrainTestSplit(luigi.Task):
             self.validation_prop,
             self.k_folds
         ]
-        result_path = pf.output_name(self.conf, specifiers_list, "cv_")
+        result_path = pf.output_name(self.conf, specifiers_list, "cv_") + ".feather"
 
         return luigi.LocalTarget(result_path)
