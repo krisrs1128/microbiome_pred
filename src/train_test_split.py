@@ -12,18 +12,6 @@ logging.config.fileConfig(logging_conf)
 logger = logging.getLogger("microbiome.pred")
 
 
-def get_cv_output_name(conf, preprocess_conf, validation_prop, k_folds):
-    project_dir = conf.get("paths", "project_dir")
-    id_string = preprocess_conf + \
-                str(validation_prop) + \
-                str(k_folds)
-    return pf.processed_data_dir(
-        project_dir,
-        "cv_" +
-        pf.hash_name(id_string) + ".feather"
-    )
-
-
 class TrainTestSplit(luigi.Task):
     ps_path = luigi.Parameter()
     preprocess_conf = luigi.Parameter()
@@ -35,19 +23,18 @@ class TrainTestSplit(luigi.Task):
         return MeltCounts(self.ps_path, self.preprocess_conf)
 
     def run(self):
-        output_name = get_cv_output_name(
-            self.conf,
+        specifiers_list = [
             self.preprocess_conf,
             self.validation_prop,
             self.k_folds
-        )
+        ]
 
         return_code = subprocess.call(
             [
                 "Rscript",
                 pf.rscript_file(self.conf, "train_test_split.R"),
                 self.input().open("r").name,
-                output_name,
+                pf.output_name(self.conf, specifiers_list, "cv_") + ".feather",
                 self.validation_prop,
                 self.k_folds
             ]
@@ -57,11 +44,11 @@ class TrainTestSplit(luigi.Task):
             raise ValueError("melt_counts.R failed")
 
     def output(self):
-        output_name = get_cv_output_name(
-            self.conf,
+        specifiers_list = [
             self.preprocess_conf,
             self.validation_prop,
             self.k_folds
-        )
+        ]
+        result_path = pf.output_name(self.conf, specifiers_list, "cv_") + ".feather"
 
-        return luigi.LocalTarget(output_name)
+        return luigi.LocalTarget(result_path)

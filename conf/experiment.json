@@ -4,6 +4,7 @@
         "preprocessing": "conf/variance_filter.json",
         "validation_prop": 0.4,
         "k_folds": 3,
-        "features": "conf/cc_relday.json"
+        "features": "conf/cc_relday.json",
+        "model": "conf/lm.json"
     }
 }

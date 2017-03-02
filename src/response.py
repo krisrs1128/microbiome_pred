@@ -51,12 +51,11 @@ class GetResponse(luigi.Task):
         ]
 
     def run(self):
-        output_name = get_response_output_name(
-            self.conf,
+        specifiers_list = [
             self.preprocess_conf,
             self.validation_prop,
             self.k_folds
-        )
+        ]
 
         return_code = subprocess.call(
             [
@@ -65,7 +64,7 @@ class GetResponse(luigi.Task):
                 self.input()[0].open("r").name,
                 self.input()[1].open("r").name,
                 self.ps_path,
-                output_name
+                pf.output_name(self.conf, specifiers_list, "responses_")
             ]
         )
 
@@ -73,19 +72,19 @@ class GetResponse(luigi.Task):
             raise ValueError("response.R failed")
 
     def output(self):
-        output_name = get_response_output_name(
-            self.conf,
+        specifiers_list = [
             self.preprocess_conf,
             self.validation_prop,
             self.k_folds
-        )
+        ]
+        result_path = pf.output_name(self.conf, specifiers_list, "responses_")
 
         outputs = []
         for k in ["all"] + list(range(1, int(self.k_folds) + 1)):
             for v in ["train", "test"]:
                 outputs.append(
                     luigi.LocalTarget(
-                        output_name + "-" + str(v) + "-" + str(k) + ".feather"
+                        result_path + "-" + str(v) + "-" + str(k) + ".feather"
                     )
                 )
 

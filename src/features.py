@@ -13,23 +13,6 @@ logging.config.fileConfig(logging_conf)
 logger = logging.getLogger("microbiome.pred")
 
 
-def get_features_output_name(conf,
-                             preprocess_conf,
-                             validation_prop,
-                             k_folds,
-                             features_conf):
-    project_dir = conf.get("paths", "project_dir")
-    id_string = preprocess_conf + \
-                str(validation_prop) + \
-                str(k_folds) + \
-                features_conf
-    return pf.processed_data_dir(
-        project_dir,
-        "features_" +
-        pf.hash_name(id_string)
-    )
-
-
 class GetFeatures(luigi.Task):
 
     ps_path = luigi.Parameter()
@@ -54,13 +37,12 @@ class GetFeatures(luigi.Task):
         ]
 
     def run(self):
-        output_name = get_features_output_name(
-            self.conf,
+        specifiers_list = [
             self.preprocess_conf,
             self.validation_prop,
             self.k_folds,
             self.features_conf
-        )
+        ]
 
         return_code = subprocess.call(
             [
@@ -70,7 +52,7 @@ class GetFeatures(luigi.Task):
                 self.input()[0].open("r").name,
                 self.input()[1].open("r").name,
                 self.ps_path,
-                output_name
+                pf.output_name(self.conf, specifiers_list, "features_")
             ]
         )
 
@@ -78,20 +60,20 @@ class GetFeatures(luigi.Task):
             raise ValueError("features.R failed")
 
     def output(self):
-        output_name = get_features_output_name(
-            self.conf,
+        specifiers_list = [
             self.preprocess_conf,
             self.validation_prop,
             self.k_folds,
             self.features_conf
-        )
+        ]
+        result_path = pf.output_name(self.conf, specifiers_list, "features_")
 
         outputs = []
         for k in ["all"] + list(range(1, int(self.k_folds) + 1)):
             for v in ["train", "test"]:
                 outputs.append(
                     luigi.LocalTarget(
-                        output_name + "-" + str(v) + "-" + str(k) + ".feather"
+                        result_path + "-" + str(v) + "-" + str(k) + ".feather"
                     )
                 )
 
