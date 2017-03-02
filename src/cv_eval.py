@@ -44,8 +44,6 @@ class CVEval(luigi.Task):
             self.eval_metrics
         ]
 
-        logger.info(self.cur_fold)
-        logger.info(type(self.cur_fold))
         y_path = pf.output_name(self.conf, specifiers_list[:3], "responses_") + \
                     "-test-" + self.cur_fold  + ".feather"
 
