@@ -47,7 +47,7 @@ class CVEval(luigi.Task):
         y_path = pf.output_name(self.conf, specifiers_list[:3], "responses_") + \
                     "-test-" + self.cur_fold  + ".feather"
         pred_path = pf.output_name(self.conf, specifiers_list[:-2], "preds_") + \
-                    "-" + str(self.cur_fold) + ".feather",
+                    "-" + self.cur_fold + ".feather"
 
         return_code = subprocess.call(
             [

@@ -26,7 +26,7 @@ x <- x %>%
   select(-Meas_ID, -rsv) %>%
   as.matrix()
 
-y_hat <- predict(model) %>%
+y_hat <- predict(model, newdata = x) %>%
   tbl_df() %>%
   rename(y_hat = value)
 
