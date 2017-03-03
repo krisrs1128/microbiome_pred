@@ -45,14 +45,15 @@ class Train(luigi.Task):
             self.validation_prop,
             self.k_folds,
             self.features_conf,
-            self.model_conf,
-            self.cur_fold
+            self.model_conf
         ]
 
         x_path = pf.output_name(self.conf, specifiers_list[:4], "features_") + \
                     "-train-" + str(self.cur_fold)  + ".feather"
         y_path = pf.output_name(self.conf, specifiers_list[:3], "responses_") + \
                     "-train-" + str(self.cur_fold)  + ".feather"
+        result_path = pf.output_name(self.conf, specifiers_list, "model_") + "-" + \
+                      str(self.cur_fold) + ".RData"
 
         return_code = subprocess.call(
             [
@@ -60,7 +61,7 @@ class Train(luigi.Task):
                 pf.rscript_file(self.conf, "train.R"),
                 x_path,
                 y_path,
-                pf.output_name(self.conf, specifiers_list, "model_") + ".RData",
+                result_path,
                 self.model_conf
             ]
         )
@@ -75,8 +76,8 @@ class Train(luigi.Task):
             self.k_folds,
             self.features_conf,
             self.model_conf,
-            self.cur_fold
         ]
-        result_path = pf.output_name(self.conf, specifiers_list, "model_") + ".RData"
+        result_path = pf.output_name(self.conf, specifiers_list, "model_") + "-" + \
+                      str(self.cur_fold) + ".RData"
 
         return luigi.LocalTarget(result_path)
