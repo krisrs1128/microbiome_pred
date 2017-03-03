@@ -39,11 +39,12 @@ class Predict(luigi.Task):
             self.k_folds,
             self.features_conf,
             self.model_conf,
-            self.cur_fold
         ]
 
         x_path = pf.output_name(self.conf, specifiers_list[:4], "features_") + \
                     "-test-" + str(self.cur_fold)  + ".feather"
+        pred_path = pf.output_name(self.conf, specifiers_list, "preds_") + "-" + \
+                    str(self.cur_fold) + ".feather"
 
         return_code = subprocess.call(
             [
@@ -51,7 +52,7 @@ class Predict(luigi.Task):
                 pf.rscript_file(self.conf, "predict.R"),
                 x_path,
                 pf.output_name(self.conf, specifiers_list, "model_") + ".RData",
-                pf.output_name(self.conf, specifiers_list, "preds_") + ".feather"
+                pred_path
             ]
         )
 
@@ -64,9 +65,9 @@ class Predict(luigi.Task):
             self.validation_prop,
             self.k_folds,
             self.features_conf,
-            self.model_conf,
-            self.cur_fold
+            self.model_conf
         ]
-        result_path = pf.output_name(self.conf, specifiers_list, "preds_") + ".feather"
+        pred_path = pf.output_name(self.conf, specifiers_list, "preds_") + "-" + \
+                    str(self.cur_fold) + ".feather"
 
-        return luigi.LocalTarget(result_path)
+        return luigi.LocalTarget(pred_path)

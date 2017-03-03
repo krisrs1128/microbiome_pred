@@ -46,12 +46,14 @@ class CVEval(luigi.Task):
 
         y_path = pf.output_name(self.conf, specifiers_list[:3], "responses_") + \
                     "-test-" + self.cur_fold  + ".feather"
+        pred_path = pf.output_name(self.conf, specifiers_list[:-2], "preds_") + \
+                    "-" + str(self.cur_fold) + ".feather",
 
         return_code = subprocess.call(
             [
                 "Rscript",
                 pf.rscript_file(self.conf, "cv_eval.R"),
-                pf.output_name(self.conf, specifiers_list[:-1], "preds_") + ".feather",
+                pred_path,
                 y_path,
                 self.eval_metrics,
                 pf.output_name(self.conf, specifiers_list, "cv_eval_") + ".feather",
