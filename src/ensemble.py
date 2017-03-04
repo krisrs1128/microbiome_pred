@@ -87,20 +87,19 @@ class Ensemble(luigi.Task):
             self.conf, self.ensemble_id, "ensemble-preds-"
         )
 
-        for suffix in ["-test-all-cv", "-all"]:
-            return_code = subprocess.call(
-                [
-                    "Rscript",
-                    pf.rscript_file(self.conf, "ensemble.R"),
-                    preds_basenames,
-                    models_basenames,
-                    y_basename,
-                    str(k_folds),
-                    new_data_prefix + suffix + ".feather",
-                    output_prefix + suffix,
-                    self.conf.get("paths", "ensemble"),
-                    self.ensemble_id
-                ]
+        return_code = subprocess.call(
+            [
+                "Rscript",
+                pf.rscript_file(self.conf, "ensemble.R"),
+                preds_basenames,
+                models_basenames,
+                y_basename,
+                str(k_folds),
+                new_data_prefix + "-all.feather",
+                output_prefix + "-all",
+                self.conf.get("paths", "ensemble"),
+                self.ensemble_id
+            ]
         )
 
         if return_code != 0:
@@ -111,8 +110,6 @@ class Ensemble(luigi.Task):
             self.conf, self.ensemble_id, "ensemble-preds-"
         )
         suffixes = [
-            "-test-all-cv-cv_trained.feather",
-            "-test-all-cv-full_trained.feather",
             "-all-cv_trained.feather",
             "-all-full_trained.feather"
         ]
