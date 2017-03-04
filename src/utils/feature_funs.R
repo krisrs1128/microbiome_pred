@@ -11,11 +11,11 @@ library("phyloseq")
 
 ## ---- functions ----
 feature_fun_generator <- function(f, melted_counts, cv_data, phyloseq_object) {
-  function(test_flag, leave_out_fold = "all", ...) {
+  function(test_flag, leave_out_fold = "all-cv", ...) {
     subset_counts <- melted_counts %>%
       left_join(cv_data)
 
-    if (leave_out_fold == "all") {
+    if (leave_out_fold == "all-cv") {
       ## case that we are looking at global train / test
       subset_counts <- subset_counts %>%
         filter(validation == test_flag)
