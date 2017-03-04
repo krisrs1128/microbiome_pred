@@ -68,7 +68,7 @@ class GetFeatures(luigi.Task):
         ]
         result_path = pf.output_name(self.conf, specifiers_list, "features_")
 
-        outputs = []
+        outputs = [luigi.LocalTarget(result_path + "-all.feather")]
         for k in ["all"] + list(range(1, int(self.k_folds) + 1)):
             for v in ["train", "test"]:
                 outputs.append(
