@@ -32,7 +32,7 @@ class Ensemble(luigi.Task):
             if i not in ensemble["exper_ids"]:
                 continue
 
-            for k in range(1, exper[i]["k_folds"] + 1):
+            for k in ["all", "all-cv"] + list(range(1, exper[i]["k_folds"] + 1)):
                 tasks.append(
                     Predict(
                         ps_path,
@@ -54,7 +54,6 @@ class Ensemble(luigi.Task):
         exper = pf.values_from_conf(self.conf, "experiment")
         preds_basenames = ""
         models_basenames = ""
-
 
         # get paths to experiment results we needs in ensembling
         for i in exper.keys():

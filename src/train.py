@@ -49,9 +49,13 @@ class Train(luigi.Task):
         ]
 
         x_path = pf.output_name(self.conf, specifiers_list[:4], "features_") + \
-                    "-train-" + str(self.cur_fold)  + ".feather"
+                 "-train-" + str(self.cur_fold)  + ".feather"
         y_path = pf.output_name(self.conf, specifiers_list[:3], "responses_") + \
-                    "-train-" + str(self.cur_fold)  + ".feather"
+                 "-train-" + str(self.cur_fold)  + ".feather"
+        if str(self.cur_fold) == "all":
+            x_path = x_path.replace("-train", "")
+            y_path = y_path.replace("-train", "")
+
         result_path = pf.output_name(self.conf, specifiers_list, "model_") + "-" + \
                       str(self.cur_fold) + ".RData"
 

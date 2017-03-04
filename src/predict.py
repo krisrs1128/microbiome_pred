@@ -43,6 +43,9 @@ class Predict(luigi.Task):
 
         x_path = pf.output_name(self.conf, specifiers_list[:4], "features_") + \
                     "-test-" + str(self.cur_fold)  + ".feather"
+        if str(self.cur_fold) == "all":
+            x_path = x_path.replace("test-", "")
+
         pred_path = pf.output_name(self.conf, specifiers_list, "preds_") + "-" + \
                     str(self.cur_fold) + ".feather"
         model_path = pf.output_name(self.conf, specifiers_list, "model_") + "-" + \
