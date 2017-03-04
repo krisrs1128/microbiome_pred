@@ -80,7 +80,7 @@ class Ensemble(luigi.Task):
             k_folds = exper[i]["k_folds"]
             new_data_path = pf.output_name(
                 self.conf, specifiers_list[:4], "features_",
-            ) + "-test-all.feather"
+            ) + "-test-all-cv.feather"
 
         output_path = pf.output_name(
             self.conf, self.ensemble_id, "ensemble-preds-test-all"
@@ -103,7 +103,7 @@ class Ensemble(luigi.Task):
         )
 
         if return_code != 0:
-            raise ValueError("predict.R failed")
+            raise ValueError("ensemble.R failed")
 
     def output(self):
         output_path = pf.output_name(
