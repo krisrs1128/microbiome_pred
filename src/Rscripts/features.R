@@ -29,6 +29,7 @@ phyloseq_object <- readRDS(ps_path)
 opts <- read_json(features_conf)
 
 ## ---- create-features ----
+## Features split across cv folds
 for (k in c("all", seq_len(max(cv_data$fold, na.rm = TRUE)))) {
   for (test_flag in c(TRUE, FALSE)) {
 
@@ -51,3 +52,18 @@ for (k in c("all", seq_len(max(cv_data$fold, na.rm = TRUE)))) {
     write_feather(x, sprintf("%s-%s-%s.feather", output_path, test_indic, k))
   }
 }
+
+## Features on full data
+x <- NULL
+for (i in seq_along(opts)) {
+  f <- get(names(opts)[[i]])
+  new_x <- do.call(f, c(list(melted_counts, phyloseq_object), opts[[i]]))
+
+  if (is.null(x)) {
+    x <- new_x
+  } else {
+    x <- x %>%
+      full_join(new_x)
+  }
+}
+write_feather(x, sprintf("%s-all.feather", output_path))
