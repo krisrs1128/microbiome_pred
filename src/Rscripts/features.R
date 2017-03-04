@@ -30,7 +30,7 @@ opts <- read_json(features_conf)
 
 ## ---- create-features ----
 ## Features split across cv folds
-for (k in c("all", seq_len(max(cv_data$fold, na.rm = TRUE)))) {
+for (k in c("all-cv", seq_len(max(cv_data$fold, na.rm = TRUE)))) {
   for (test_flag in c(TRUE, FALSE)) {
 
     x <- NULL

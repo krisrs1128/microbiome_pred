@@ -32,7 +32,7 @@ class Ensemble(luigi.Task):
             if i not in ensemble["exper_ids"]:
                 continue
 
-            for k in range(1, exper[i]["k_folds"] + 1):
+            for k in ["all", "all-cv"] + list(range(1, exper[i]["k_folds"] + 1)):
                 tasks.append(
                     Predict(
                         ps_path,
@@ -54,7 +54,6 @@ class Ensemble(luigi.Task):
         exper = pf.values_from_conf(self.conf, "experiment")
         preds_basenames = ""
         models_basenames = ""
-
 
         # get paths to experiment results we needs in ensembling
         for i in exper.keys():
@@ -81,7 +80,7 @@ class Ensemble(luigi.Task):
             k_folds = exper[i]["k_folds"]
             new_data_path = pf.output_name(
                 self.conf, specifiers_list[:4], "features_",
-            ) + "-test-all.feather"
+            ) + "-test-all-cv.feather"
 
         output_path = pf.output_name(
             self.conf, self.ensemble_id, "ensemble-preds-test-all"
@@ -104,7 +103,7 @@ class Ensemble(luigi.Task):
         )
 
         if return_code != 0:
-            raise ValueError("predict.R failed")
+            raise ValueError("ensemble.R failed")
 
     def output(self):
         output_path = pf.output_name(

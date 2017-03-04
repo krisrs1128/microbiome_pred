@@ -30,7 +30,7 @@ response_fun <- function(melted_counts, phyloseq_object) {
   melted_counts
 }
 
-for (k in c("all", seq_len(max(cv_data$fold, na.rm = TRUE)))) {
+for (k in c("all-cv", seq_len(max(cv_data$fold, na.rm = TRUE)))) {
   for (test_flag in c(TRUE, FALSE)) {
     cv_response <- feature_fun_generator(
       response_fun,
@@ -44,3 +44,5 @@ for (k in c("all", seq_len(max(cv_data$fold, na.rm = TRUE)))) {
     write_feather(y, sprintf("%s-%s-%s.feather", output_path, test_indic, k))
   }
 }
+
+write_feather(melted_counts, sprintf("%s-all.feather", output_path))
