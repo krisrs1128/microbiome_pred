@@ -97,7 +97,7 @@ class Ensemble(luigi.Task):
                     y_basename,
                     str(k_folds),
                     new_data_prefix + suffix + ".feather",
-                    output_prefix + suffix + ".feather",
+                    output_prefix + suffix,
                     self.conf.get("paths", "ensemble"),
                     self.ensemble_id
                 ]
@@ -110,5 +110,10 @@ class Ensemble(luigi.Task):
         output_prefix = pf.output_name(
             self.conf, self.ensemble_id, "ensemble-preds-"
         )
-        suffixes = ["-test-all-cv.feather", "-all.feather"]
+        suffixes = [
+            "-test-all-cv-cv_trained.feather",
+            "-test-all-cv-full_trained.feather",
+            "-all-cv_trained.feather",
+            "-all-full_trained.feather"
+        ]
         return [luigi.LocalTarget(output_prefix + s) for s in suffixes]
