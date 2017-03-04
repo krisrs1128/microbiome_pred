@@ -10,7 +10,7 @@ args <- commandArgs(trailingOnly = TRUE)
 message("Executing ensemble.R with arguments:")
 message(paste(args, collapse = "\n"))
 
-preds_basename <- strsplit(args[[1]], ";")[[1]]
+preds_basenames <- strsplit(args[[1]], ";")[[1]]
 models_basenames <- strsplit(args[[2]], ";")[[1]]
 y_basename <- args[[3]]
 k_folds <- as.integer(args[[4]])
@@ -34,10 +34,15 @@ y_list <- list()
 
 for (k in seq_len(k_folds)) {
   y_list[[k]] <- read_feather(sprintf("%s-test-%s.feather", y_basename, k))
-  preds_list[[k]] <- read_feather(sprintf("%s-%s.feather", preds_basename, k))
+
+  preds_list[[k]] <- list()
+  for (i in seq_along(preds_basenames)) {
+    preds_list[[k]][[i]] <- read_feather(sprintf("%s-%s.feather", preds_basenames[i], k))
+  }
+
   models_list[[k]] <- list()
-  for (m in seq_along(models_basename)) {
-    models_list[[k]][[m]] <- get(load(sprintf("%s-%s.RData", models_basename[m], k)))
+  for (i in seq_along(models_basenames)) {
+    models_list[[k]][[i]] <- get(load(sprintf("%s-%s.RData", models_basenames[i], k)))
   }
 }
 
@@ -48,8 +53,8 @@ new_data <- read_feather(new_data_path) %>%
 ## ---- ensemble ----
 f <- get(ensemble_opts$method)
 
-preds_list <- rep(preds_list, each = length(models_basename))
-y_list <- rep(y_list, each = length(models_basename))
+preds_list <- rep(preds_list, each = length(models_basenames))
+y_list <- rep(y_list, each = length(models_basenames))
 models_list <- unlist(models_list, recursive = FALSE)
 trained_ensemble <- f(models_list, preds_list, y_list)
 
