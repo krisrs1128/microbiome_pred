@@ -78,35 +78,37 @@ class Ensemble(luigi.Task):
             # These are assumed constant over experiments, so safe to overwrite
             y_basename = pf.output_name(self.conf, specifiers_list[:3], "responses_")
             k_folds = exper[i]["k_folds"]
-            new_data_path = pf.output_name(
+            new_data_prefix = pf.output_name(
                 self.conf, specifiers_list[:4], "features_",
-            ) + "-test-all-cv.feather"
-
-        output_path = pf.output_name(
-            self.conf, self.ensemble_id, "ensemble-preds-test-all"
-        ) + ".feather"
+            )
 
         # Now call the ensemble script
-        return_code = subprocess.call(
-            [
-                "Rscript",
-                pf.rscript_file(self.conf, "ensemble.R"),
-                preds_basenames,
-                models_basenames,
-                y_basename,
-                str(k_folds),
-                new_data_path,
-                output_path,
-                self.conf.get("paths", "ensemble"),
-                self.ensemble_id
-            ]
+        output_prefix = pf.output_name(
+            self.conf, self.ensemble_id, "ensemble-preds-"
+        )
+
+        for suffix in ["-test-all-cv", "-all"]:
+            return_code = subprocess.call(
+                [
+                    "Rscript",
+                    pf.rscript_file(self.conf, "ensemble.R"),
+                    preds_basenames,
+                    models_basenames,
+                    y_basename,
+                    str(k_folds),
+                    new_data_prefix + suffix + ".feather",
+                    output_prefix + suffix + ".feather",
+                    self.conf.get("paths", "ensemble"),
+                    self.ensemble_id
+                ]
         )
 
         if return_code != 0:
             raise ValueError("ensemble.R failed")
 
     def output(self):
-        output_path = pf.output_name(
-            self.conf, self.ensemble_id, "ensemble-preds-test-all"
-        ) + ".feather"
-        return luigi.LocalTarget(output_path)
+        output_prefix = pf.output_name(
+            self.conf, self.ensemble_id, "ensemble-preds-"
+        )
+        suffixes = ["-test-all-cv.feather", "-all.feather"]
+        return [luigi.LocalTarget(output_prefix + s) for s in suffixes]
