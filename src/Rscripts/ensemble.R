@@ -17,6 +17,7 @@ k_folds <- as.integer(args[[4]])
 new_data_path <- args[[5]]
 output_path <- args[[6]]
 ensemble_conf <- args[[7]]
+ensemble_id <- args[[8]]
 
 ## ---- libraries ----
 library("caret")
@@ -26,7 +27,7 @@ library("jsonlite")
 source("src/utils/ensemble_funs.R")
 
 ## ---- read-data ---
-ensemble_opts <- read_json(ensemble_conf)
+ensemble_opts <- read_json(ensemble_conf)[[ensemble_id]]
 
 models_list <- list()
 preds_list <- list()
