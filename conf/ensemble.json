@@ -1,0 +1,7 @@
+{
+    "ensemble_1": {
+        "method": "ensemble_averaging",
+        "opts": {},
+        "exper_ids": ["exper_1", "exper_2"]
+    }
+}

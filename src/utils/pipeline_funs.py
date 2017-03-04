@@ -1,5 +1,6 @@
 import hashlib
 import os.path
+import json
 
 
 def hash_name(long_name, length=15):
@@ -65,3 +66,16 @@ def output_name(conf, specifiers_list, prefix):
         project_dir,
         prefix + hash_name(id_string)
     )
+
+
+def values_from_conf(conf, field_name):
+    path = os.path.join(
+        conf.get("paths", "project_dir"),
+        conf.get("paths", field_name)
+    )
+
+    with open(path, "r") as f:
+        values = json.load(f)
+
+    return values
+

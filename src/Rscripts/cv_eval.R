@@ -7,7 +7,7 @@
 ## ---- arguments ----
 args <- commandArgs(trailingOnly = TRUE)
 
-message("Executing predict.R with arguments:")
+message("Executing cv_eval.R with arguments:")
 message(paste(args, collapse = "\n"))
 
 preds_path <- args[[1]]

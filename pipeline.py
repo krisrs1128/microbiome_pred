@@ -1,8 +1,7 @@
 import luigi
 from luigi import configuration
-import os.path
-import json
-from src.cv_eval import CVEval
+from src.ensemble import Ensemble
+import src.utils.pipeline_funs as pf
 
 import logging
 import logging.config
@@ -15,35 +14,11 @@ class MicrobiomePred(luigi.WrapperTask):
     conf = configuration.get_config()
 
     def requires(self):
-        ps_path = os.path.join(
-            self.conf.get("paths", "project_dir"),
-            self.conf.get("paths", "phyloseq")
-        )
-
-        # Read experiment configuration file
-        exper_conf = os.path.join(
-            self.conf.get("paths", "project_dir"),
-            self.conf.get("paths", "experiment")
-        )
-
-        with open(exper_conf, "r") as f:
-            exper = json.load(f)
+        ensemble = pf.values_from_conf(self.conf, "ensemble")
 
         tasks = []
-        for i in exper.keys():
-            for k in range(1, exper[i]["k_folds"] + 1):
-                tasks.append(
-                    CVEval(
-                        ps_path,
-                        exper[i]["preprocessing"],
-                        str(exper[i]["validation_prop"]),
-                        str(exper[i]["k_folds"]),
-                        exper[i]["features"],
-                        exper[i]["model"],
-                        str(k),
-                        exper[i]["metrics"]
-                    )
-                )
+        for i in ensemble.keys():
+            tasks.append(Ensemble(i))
 
         return tasks
 
