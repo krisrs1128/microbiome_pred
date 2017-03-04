@@ -53,9 +53,9 @@ new_data <- read_feather(new_data_path) %>%
 ## ---- ensemble ----
 f <- get(ensemble_opts$method)
 
-preds_list <- rep(preds_list, each = length(models_basenames))
 y_list <- rep(y_list, each = length(models_basenames))
 models_list <- unlist(models_list, recursive = FALSE)
+preds_list <- unlist(preds_list, recursive = FALSE)
 trained_ensemble <- f(models_list, preds_list, y_list)
 
 y_hat <- trained_ensemble$ens_predict(new_data) %>%
