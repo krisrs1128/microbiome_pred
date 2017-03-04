@@ -84,7 +84,7 @@ class Ensemble(luigi.Task):
             ) + "-test-all.feather"
 
         output_path = pf.output_name(
-            self.conf, self.ensemble_id, "ensemble-test-all"
+            self.conf, self.ensemble_id, "ensemble-preds-test-all"
         ) + ".feather"
 
         # Now call the ensemble script
@@ -108,6 +108,6 @@ class Ensemble(luigi.Task):
 
     def output(self):
         output_path = pf.output_name(
-            self.conf, self.ensemble_id, "ensemble-test-all"
+            self.conf, self.ensemble_id, "ensemble-preds-test-all"
         ) + ".feather"
         return luigi.LocalTarget(output_path)
