@@ -78,15 +78,15 @@ class Ensemble(luigi.Task):
             # These are assumed constant over experiments, so safe to overwrite
             y_basename = pf.output_name(self.conf, specifiers_list[:3], "responses_")
             k_folds = exper[i]["k_folds"]
-            new_data_path = pf.output_name(
+            new_data_prefix = pf.output_name(
                 self.conf, specifiers_list[:4], "features_",
-            ) + "-test-all-cv.feather"
-
-        output_path = pf.output_name(
-            self.conf, self.ensemble_id, "ensemble-preds-test-all"
-        ) + ".feather"
+            )
 
         # Now call the ensemble script
+        output_prefix = pf.output_name(
+            self.conf, self.ensemble_id, "ensemble-preds-"
+        )
+
         return_code = subprocess.call(
             [
                 "Rscript",
@@ -95,8 +95,8 @@ class Ensemble(luigi.Task):
                 models_basenames,
                 y_basename,
                 str(k_folds),
-                new_data_path,
-                output_path,
+                new_data_prefix + "-all.feather",
+                output_prefix + "-all",
                 self.conf.get("paths", "ensemble"),
                 self.ensemble_id
             ]
@@ -106,7 +106,11 @@ class Ensemble(luigi.Task):
             raise ValueError("ensemble.R failed")
 
     def output(self):
-        output_path = pf.output_name(
-            self.conf, self.ensemble_id, "ensemble-preds-test-all"
-        ) + ".feather"
-        return luigi.LocalTarget(output_path)
+        output_prefix = pf.output_name(
+            self.conf, self.ensemble_id, "ensemble-preds-"
+        )
+        suffixes = [
+            "-all-cv_trained.feather",
+            "-all-full_trained.feather"
+        ]
+        return [luigi.LocalTarget(output_prefix + s) for s in suffixes]

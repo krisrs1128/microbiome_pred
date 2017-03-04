@@ -33,7 +33,7 @@ models_list <- list()
 preds_list <- list()
 y_list <- list()
 
-for (k in seq_len(k_folds)) {
+for (k in c(seq_len(k_folds), "all-cv")) {
   y_list[[k]] <- read_feather(sprintf("%s-test-%s.feather", y_basename, k))
 
   preds_list[[k]] <- list()
@@ -51,7 +51,7 @@ new_data <- read_feather(new_data_path) %>%
   select(-Meas_ID, -rsv) %>%
   as.matrix()
 
-## ---- ensemble ----
+## ---- ensemble-cv ----
 f <- get(ensemble_opts$method)
 
 y_list <- rep(y_list, each = length(models_basenames))
@@ -62,4 +62,23 @@ trained_ensemble <- f(models_list, preds_list, y_list)
 y_hat <- trained_ensemble$ens_predict(new_data) %>%
   tbl_df() %>%
   rename(y_hat = value)
-write_feather(y_hat, output_path)
+write_feather(y_hat, sprintf("%s-cv_trained.feather", output_path))
+
+## ---- ensemble-all ----
+## no longer restrict ourselves to non-validation data
+y_list <- list()
+models_list <- list()
+preds_list <- list()
+
+for (i in seq_along(preds_basenames)) {
+  preds_list[[i]] <- read_feather(sprintf("%s-all.feather", preds_basenames[i]))
+}
+for (i in seq_along(models_basenames)) {
+  models_list[[i]] <- get(load(sprintf("%s-all.RData", models_basenames[i])))
+}
+
+trained_ensemble <- f(models_list, preds_list, y_list)
+y_hat <- trained_ensemble$ens_predict(new_data) %>%
+  tbl_df() %>%
+  rename(y_hat = value)
+write_feather(y_hat, sprintf("%s-full_trained.feather", output_path))
