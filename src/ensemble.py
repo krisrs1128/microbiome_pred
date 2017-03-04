@@ -1,7 +1,6 @@
 import luigi
 from luigi import configuration
 import os.path
-import json
 import subprocess
 import src.utils.pipeline_funs as pf
 from src.predict import Predict
@@ -13,28 +12,15 @@ logging.config.fileConfig(logging_conf)
 logger = logging.getLogger("microbiome.pred")
 
 
-def values_from_conf(conf, field_name):
-    path = os.path.join(
-        conf.get("paths", "project_dir"),
-        conf.get("paths", field_name)
-    )
-
-    with open(path, "r") as f:
-        values = json.load(f)
-
-    return values
-
-
 class Ensemble(luigi.Task):
     ensemble_id = luigi.Parameter()
-    output_path = luigi.Parameter()
-    conf = configuration.get_conf()
+    conf = configuration.get_config()
 
     def requires(self):
-        ensemble = values_from_conf(self.conf, "ensemble")
+        ensemble = pf.values_from_conf(self.conf, "ensemble")
         ensemble = ensemble[self.ensemble_id]
 
-        exper = values_from_conf(self.conf, "experiment")
+        exper = pf.values_from_conf(self.conf, "experiment")
         ps_path = os.path.join(
             self.conf.get("paths", "project_dir"),
             self.conf.get("paths", "phyloseq")
@@ -62,10 +48,10 @@ class Ensemble(luigi.Task):
         return tasks
 
     def run(self):
-        ensemble = values_from_conf(self.conf, "ensemble")
+        ensemble = pf.values_from_conf(self.conf, "ensemble")
         ensemble = ensemble[self.ensemble_id]
 
-        exper = values_from_conf(self.conf, "experiment")
+        exper = pf.values_from_conf(self.conf, "experiment")
         preds_basenames = ""
         models_basenames = ""
 
@@ -83,23 +69,23 @@ class Ensemble(luigi.Task):
                 exper[i]["model"]
             ]
 
-            preds_basenames +=  ";" + pf.output_name(
+            preds_basenames +=  pf.output_name(
                 self.conf, specifiers_list, "preds_"
-            )
-            models_basenames +=";" + pf.output_name(
+            ) + ";"
+            models_basenames += pf.output_name(
                 self.conf, specifiers_list, "model_"
-            )
+            ) + ";"
 
             # These are assumed constant over experiments, so safe to overwrite
-            y_basename = pf.output_name(self.conf, specifiers_list[:3])
+            y_basename = pf.output_name(self.conf, specifiers_list[:3], "responses_")
             k_folds = exper[i]["k_folds"]
             new_data_path = pf.output_name(
                 self.conf, specifiers_list[:4], "features_",
-            ) + "-all.feather"
+            ) + "-test-all.feather"
 
         output_path = pf.output_name(
-            self.conf, self.ensemble_id, "test-all.feather"
-        )
+            self.conf, self.ensemble_id, "ensemble-test-all"
+        ) + ".feather"
 
         # Now call the ensemble script
         return_code = subprocess.call(
@@ -109,10 +95,11 @@ class Ensemble(luigi.Task):
                 preds_basenames,
                 models_basenames,
                 y_basename,
-                k_folds,
+                str(k_folds),
                 new_data_path,
                 output_path,
-                self.ensemble
+                self.conf.get("paths", "ensemble"),
+                self.ensemble_id
             ]
         )
 
@@ -121,6 +108,6 @@ class Ensemble(luigi.Task):
 
     def output(self):
         output_path = pf.output_name(
-            self.conf, self.ensemble_id, "test-all.feather"
-        )
+            self.conf, self.ensemble_id, "ensemble-test-all"
+        ) + ".feather"
         return luigi.LocalTarget(output_path)
