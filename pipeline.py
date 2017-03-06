@@ -1,9 +1,9 @@
 import luigi
 from luigi import configuration
 import os
-from src.ensemble_eval import EnsembleEval
-from src.cv_eval import CVEval
-import src.utils.pipeline_funs as pf
+from src.tasks.ensemble_eval import EnsembleEval
+from src.tasks.cv_eval import CVEval
+import src.tasks.pipeline_funs as pf
 
 import logging
 import logging.config

@@ -2,8 +2,8 @@ import luigi
 from luigi import configuration
 import os.path
 import subprocess
-import src.utils.pipeline_funs as pf
-from src.predict import Predict
+import src.tasks.pipeline_funs as pf
+from src.tasks.predict import Predict
 
 import logging
 import logging.config

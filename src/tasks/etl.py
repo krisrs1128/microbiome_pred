@@ -2,7 +2,7 @@ import luigi
 from luigi import configuration
 import subprocess
 import os.path
-import src.utils.pipeline_funs as pf
+import src.tasks.pipeline_funs as pf
 
 import logging
 import logging.config

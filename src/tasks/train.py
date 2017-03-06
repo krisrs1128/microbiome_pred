@@ -2,9 +2,9 @@ import luigi
 from luigi import configuration
 import subprocess
 
-import src.utils.pipeline_funs as pf
-from src.features import GetFeatures
-from src.response import GetResponse
+import src.tasks.pipeline_funs as pf
+from src.tasks.features import GetFeatures
+from src.tasks.response import GetResponse
 
 import logging
 import logging.config

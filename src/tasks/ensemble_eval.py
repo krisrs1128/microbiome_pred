@@ -2,8 +2,8 @@ import luigi
 from luigi import configuration
 import subprocess
 
-import src.utils.pipeline_funs as pf
-from src.ensemble_predict import EnsemblePredict
+import src.tasks.pipeline_funs as pf
+from src.tasks.ensemble_predict import EnsemblePredict
 
 import logging
 import logging.config

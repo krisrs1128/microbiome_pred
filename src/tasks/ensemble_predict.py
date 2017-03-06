@@ -2,8 +2,8 @@ import luigi
 from luigi import configuration
 import subprocess
 
-import src.utils.pipeline_funs as pf
-from src.ensemble import Ensemble
+import src.tasks.pipeline_funs as pf
+from src.tasks.ensemble import Ensemble
 
 import logging
 import logging.config

@@ -2,9 +2,9 @@ import luigi
 from luigi import configuration
 import subprocess
 
-import src.utils.pipeline_funs as pf
-from src.train_test_split import TrainTestSplit
-from src.etl import MeltCounts
+import src.tasks.pipeline_funs as pf
+from src.tasks.train_test_split import TrainTestSplit
+from src.tasks.etl import MeltCounts
 
 import logging
 import logging.config
@@ -13,13 +13,12 @@ logging.config.fileConfig(logging_conf)
 logger = logging.getLogger("microbiome.pred")
 
 
-class GetFeatures(luigi.Task):
+class GetResponse(luigi.Task):
 
     ps_path = luigi.Parameter()
     preprocess_conf = luigi.Parameter()
     validation_prop = luigi.Parameter()
     k_folds = luigi.Parameter()
-    features_conf = luigi.Parameter()
     conf = configuration.get_config()
 
     def requires(self):
@@ -40,42 +39,39 @@ class GetFeatures(luigi.Task):
         specifiers_list = [
             self.preprocess_conf,
             self.validation_prop,
-            self.k_folds,
-            self.features_conf
+            self.k_folds
         ]
 
         return_code = subprocess.call(
             [
                 "Rscript",
-                pf.rscript_file(self.conf, "features.R"),
-                self.features_conf,
+                pf.rscript_file(self.conf, "response.R"),
                 self.input()[0].open("r").name,
                 self.input()[1].open("r").name,
                 self.ps_path,
                 pf.output_name(
                     self.conf,
                     specifiers_list,
-                    "features_",
-                    "features"
+                    "responses_",
+                    "responses"
                 )
             ]
         )
 
         if return_code != 0:
-            raise ValueError("features.R failed")
+            raise ValueError("response.R failed")
 
     def output(self):
         specifiers_list = [
             self.preprocess_conf,
             self.validation_prop,
-            self.k_folds,
-            self.features_conf
+            self.k_folds
         ]
         result_path = pf.output_name(
             self.conf,
             specifiers_list,
-            "features_",
-            "features"
+            "responses_",
+            "responses"
         )
 
         outputs = [luigi.LocalTarget(result_path + "-all.feather")]

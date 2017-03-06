@@ -2,8 +2,8 @@ import luigi
 from luigi import configuration
 import subprocess
 
-import src.utils.pipeline_funs as pf
-from src.predict import Predict
+import src.tasks.pipeline_funs as pf
+from src.tasks.train import Train
 
 import logging
 import logging.config
@@ -12,7 +12,7 @@ logging.config.fileConfig(logging_conf)
 logger = logging.getLogger("microbiome.pred")
 
 
-class CVEval(luigi.Task):
+class Predict(luigi.Task):
     ps_path = luigi.Parameter()
     preprocess_conf = luigi.Parameter()
     validation_prop = luigi.Parameter()
@@ -20,11 +20,10 @@ class CVEval(luigi.Task):
     features_conf = luigi.Parameter()
     model_conf = luigi.Parameter()
     cur_fold = luigi.Parameter()
-    eval_metrics = luigi.Parameter()
     conf = configuration.get_config()
 
     def requires(self):
-        return Predict(
+        return Train(
             self.ps_path,
             self.preprocess_conf,
             self.validation_prop,
@@ -40,53 +39,43 @@ class CVEval(luigi.Task):
             self.validation_prop,
             self.k_folds,
             self.features_conf,
-            self.model_conf,
-            self.cur_fold,
-            self.eval_metrics
+            self.model_conf
         ]
 
-        y_path = pf.output_name(
+        x_path = pf.output_name(
             self.conf,
-            specifiers_list[:3],
-            "responses_",
-            "responses"
-        ) + "-test-" + self.cur_fold  + ".feather"
-        if self.cur_fold == "all":
-            y_path = y_path.replace("-test", "")
+            specifiers_list[:4],
+            "features_",
+            "features"
+        ) + "-test-" + str(self.cur_fold)  + ".feather"
+        if str(self.cur_fold) == "all":
+            x_path = x_path.replace("test-", "")
 
         pred_path = pf.output_name(
             self.conf,
-            specifiers_list[:-2],
+            specifiers_list,
             "preds_",
             "preds"
-        ) + "-" + self.cur_fold + ".feather"
-
-        output_path = pf.output_name(
+        ) + "-" + str(self.cur_fold) + ".feather"
+        model_path = pf.output_name(
             self.conf,
             specifiers_list,
-            "cv_eval_",
-            "eval"
-        ) + ".feather"
+            "model_",
+            "models"
+        ) + "-" + str(self.cur_fold) + ".RData"
 
         return_code = subprocess.call(
             [
                 "Rscript",
-                pf.rscript_file(self.conf, "eval.R"),
-                pred_path,
-                y_path,
-                self.eval_metrics,
-                output_path,
-                self.preprocess_conf,
-                self.features_conf,
-                self.model_conf,
-                self.validation_prop,
-                self.k_folds,
-                self.cur_fold
+                pf.rscript_file(self.conf, "predict.R"),
+                x_path,
+                model_path,
+                pred_path
             ]
         )
 
         if return_code != 0:
-            raise ValueError("eval.R failed")
+            raise ValueError("predict.R failed")
 
     def output(self):
         specifiers_list = [
@@ -94,15 +83,14 @@ class CVEval(luigi.Task):
             self.validation_prop,
             self.k_folds,
             self.features_conf,
-            self.model_conf,
-            self.cur_fold,
-            self.eval_metrics
+            self.model_conf
         ]
-        output_path = pf.output_name(
+
+        pred_path = pf.output_name(
             self.conf,
             specifiers_list,
-            "cv_eval_",
-            "eval"
-        ) + ".feather"
+            "preds_",
+            "preds"
+        ) + "-" + str(self.cur_fold) + ".feather"
 
-        return luigi.LocalTarget(output_path)
+        return luigi.LocalTarget(pred_path)

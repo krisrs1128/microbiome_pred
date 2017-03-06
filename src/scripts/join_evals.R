@@ -6,7 +6,7 @@
 
 library("feather")
 f <- list.files(
-  "../data/processed/eval/",
+  "../../data/processed/eval/",
   pattern = ".feather",
   full.names = TRUE
 )
@@ -17,6 +17,6 @@ for (i in seq_along(metrics)) {
 
 write.csv(
   do.call(rbind, metrics),
-  "../data/processed/eval/all_metrics.csv",
+  "../../data/processed/eval/all_metrics.csv",
   row.names = FALSE
 )
