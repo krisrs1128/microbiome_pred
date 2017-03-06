@@ -1,6 +1,7 @@
 import luigi
 from luigi import configuration
 from src.ensemble_eval import EnsembleEval
+from src.cv_eval import CVEval
 import src.utils.pipeline_funs as pf
 
 import logging
@@ -14,13 +15,30 @@ class MicrobiomePred(luigi.WrapperTask):
     conf = configuration.get_config()
 
     def requires(self):
+        ps_path = os.path.join(
+            self.conf.get("paths", "project_dir"),
+            self.conf.get("paths", "phyloseq")
+        )
+
         ensemble = pf.values_from_conf(self.conf, "ensemble")
 
         tasks = []
         for i in ensemble.keys():
             tasks.append(EnsembleEval(i))
 
-        return tasks
+        exper = pf.values_from_conf(self.conf, "experiment")
+        for i in exper.keys():
+            for k in ["all", "all-cv"] + lists(range(1, exper[i]["k_folds"]]):
+                tasks.append(
+                    CVEval(
+                        ps_path,
+                        exper[i]["preprocessing"],
+                        str(exper[i]["validation_prop"]),
+                        str(exper[i]["k_folds"]),
+                        exper[i]["features"],
+                        exper[i]["model"],
+                        k
+                    )
 
 
 if __name__ == "__main__":
