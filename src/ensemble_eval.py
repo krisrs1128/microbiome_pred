@@ -23,13 +23,13 @@ class EnsembleEval(luigi.Task):
         ensemble = pf.values_from_conf(self.conf, "ensemble")
         ensemble = ensemble[self.ensemble_id]
         exper = pf.values_from_conf(self.conf, "experiment")
-        ensemble_properties = exper[ensemble["exper_ids"][0]]
+        properties = exper[ensemble["exper_ids"][0]]
 
         # Get paths to features on which to generate predictions
         specifiers_list = [
-            ensemble_properties["preprocessing"],
-            ensemble_properties["validation_prop"],
-            ensemble_properties["k_folds"]
+            properties["preprocessing"],
+            properties["validation_prop"],
+            properties["k_folds"]
         ]
 
         y_basename = pf.output_name(
@@ -54,17 +54,15 @@ class EnsembleEval(luigi.Task):
                     [
                         "Rscript",
                         pf.rscript_file(self.conf, "cv_eval.R"),
-                        pred_basename + "-" + train_type +
-                        "_trained-" + test_type + ".feather",
+                        pred_basename + "-" + train_type + "_trained-" + test_type + ".feather",
                         y_basename + "-" + test_type + ".feather",
-                        ensemble_properties["metrics"],
-                        output_basename + "-" + train_type +
-                        "_trained-" + test_type + ".feather",
-                        ensemble_properties["preprocessing"],
-                        ensemble_properties["features"],
+                        properties["metrics"],
+                        output_basename + "-" + train_type + "_trained-" + test_type + ".feather",
+                        properties["preprocessing"],
+                        properties["features"],
                         "ensemble_" + self.ensemble_id,
-                        str(ensemble_properties["validation_prop"]),
-                        str(ensemble_properties["k_folds"]),
+                        str(properties["validation_prop"]),
+                        str(properties["k_folds"]),
                         "NA"
                     ]
                 )
@@ -83,7 +81,7 @@ class EnsembleEval(luigi.Task):
         for train_type in ["cv", "full"]:
             for test_type in ["all", "test-all-cv"]:
                 output_names.append(
-                    output_basename + "-" + train_type + "-" + test_type + ".feather"
+                    output_basename + "-" + train_type + "_trained-" + test_type + ".feather"
                 )
 
         return [luigi.LocalTarget(s) for s in output_names]

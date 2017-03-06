@@ -30,9 +30,11 @@ source("src/utils/eval_funs.R")
 
 ## ---- get-metrics ----
 y <- read_feather(y_path) %>%
+  select(count) %>%
   unlist() %>%
   as.numeric()
 y_hat <- read_feather(preds_path) %>%
+  select(y_hat) %>%
   unlist() %>%
   as.numeric()
 

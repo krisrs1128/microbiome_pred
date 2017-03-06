@@ -58,10 +58,8 @@ class EnsemblePredict(luigi.Task):
                         "Rscript",
                         pf.rscript_file(self.conf, "predict.R"),
                         x_basename + "-" + test_type + ".feather",
-                        model_basename + "-all-" + train_type +
-                        "_trained.RData",
-                        pred_basename + "-" + train_type +
-                        "_trained-" + test_type + ".feather"
+                        model_basename + "-all-" + train_type + "_trained.RData",
+                        pred_basename + "-" + train_type + "_trained-" + test_type + ".feather"
                     ]
                 )
 
