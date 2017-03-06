@@ -5,15 +5,18 @@
 ## truth across data sets
 
 ensemble_averaging <- function(models_list, preds_list, y_list) {
-  model <- list()
-  ens_predict <- function(newdata) {
-    preds <- list()
-    for (m in seq_along(models_list)) {
-      preds[[m]] <- predict(models_list[[m]], newdata = newdata)
-    }
+  structure(
+    list("models_list" = models_list),
+    class = "ensemble_averaging"
+  )
+}
 
-    all_preds <- do.call(cbind, preds)
-    rowMeans(all_preds)
+predict.ensemble_averaging <- function(x, newdata) {
+  preds <- list()
+  for (m in seq_along(x$models_list)) {
+    preds[[m]] <- predict(x$models_list[[m]], newdata = newdata)
   }
-  list("model" = model, "ens_predict" = ens_predict)
+
+  all_preds <- do.call(cbind, preds)
+  rowMeans(all_preds)
 }
