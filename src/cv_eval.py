@@ -51,22 +51,22 @@ class CVEval(luigi.Task):
             "responses_",
             "responses"
         ) + "-test-" + self.cur_fold  + ".feather"
+        if self.cur_fold == "all":
+            y_path = y_path.replace("-test", "")
 
         pred_path = pf.output_name(
             self.conf,
             specifiers_list[:-2],
             "preds_",
             "preds"
-        ) +
-        "-" + self.cur_fold + ".feather"
+        ) + "-" + self.cur_fold + ".feather"
 
         output_path = pf.output_name(
             self.conf,
             specifiers_list,
             "cv_eval_",
             "eval"
-        ) +
-        ".feather"
+        ) + ".feather"
 
         return_code = subprocess.call(
             [
