@@ -1,6 +1,6 @@
 import luigi
 from luigi import configuration
-from src.ensemble import Ensemble
+from src.ensemble_predict import EnsemblePredict
 import src.utils.pipeline_funs as pf
 
 import logging
@@ -18,7 +18,7 @@ class MicrobiomePred(luigi.WrapperTask):
 
         tasks = []
         for i in ensemble.keys():
-            tasks.append(Ensemble(i))
+            tasks.append(EnsemblePredict(i))
 
         return tasks
 
