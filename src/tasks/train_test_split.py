@@ -2,8 +2,8 @@ import luigi
 from luigi import configuration
 import subprocess
 
-import src.utils.pipeline_funs as pf
-from src.etl import MeltCounts
+import src.tasks.pipeline_funs as pf
+from src.tasks.etl import MeltCounts
 
 import logging
 import logging.config

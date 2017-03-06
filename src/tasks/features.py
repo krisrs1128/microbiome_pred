@@ -2,9 +2,9 @@ import luigi
 from luigi import configuration
 import subprocess
 
-import src.utils.pipeline_funs as pf
-from src.train_test_split import TrainTestSplit
-from src.etl import MeltCounts
+import src.tasks.pipeline_funs as pf
+from src.tasks.train_test_split import TrainTestSplit
+from src.tasks.etl import MeltCounts
 
 import logging
 import logging.config
@@ -13,27 +13,13 @@ logging.config.fileConfig(logging_conf)
 logger = logging.getLogger("microbiome.pred")
 
 
-def get_response_output_name(conf,
-                             preprocess_conf,
-                             validation_prop,
-                             k_folds) :
-    project_dir = conf.get("paths", "project_dir")
-    id_string = preprocess_conf + \
-                str(validation_prop) + \
-                str(k_folds)
-    return pf.processed_data_dir(
-        project_dir,
-        "responses_" +
-        pf.hash_name(id_string)
-    )
-
-
-class GetResponse(luigi.Task):
+class GetFeatures(luigi.Task):
 
     ps_path = luigi.Parameter()
     preprocess_conf = luigi.Parameter()
     validation_prop = luigi.Parameter()
     k_folds = luigi.Parameter()
+    features_conf = luigi.Parameter()
     conf = configuration.get_config()
 
     def requires(self):
@@ -54,30 +40,43 @@ class GetResponse(luigi.Task):
         specifiers_list = [
             self.preprocess_conf,
             self.validation_prop,
-            self.k_folds
+            self.k_folds,
+            self.features_conf
         ]
 
         return_code = subprocess.call(
             [
                 "Rscript",
-                pf.rscript_file(self.conf, "response.R"),
+                pf.rscript_file(self.conf, "features.R"),
+                self.features_conf,
                 self.input()[0].open("r").name,
                 self.input()[1].open("r").name,
                 self.ps_path,
-                pf.output_name(self.conf, specifiers_list, "responses_")
+                pf.output_name(
+                    self.conf,
+                    specifiers_list,
+                    "features_",
+                    "features"
+                )
             ]
         )
 
         if return_code != 0:
-            raise ValueError("response.R failed")
+            raise ValueError("features.R failed")
 
     def output(self):
         specifiers_list = [
             self.preprocess_conf,
             self.validation_prop,
-            self.k_folds
+            self.k_folds,
+            self.features_conf
         ]
-        result_path = pf.output_name(self.conf, specifiers_list, "responses_")
+        result_path = pf.output_name(
+            self.conf,
+            specifiers_list,
+            "features_",
+            "features"
+        )
 
         outputs = [luigi.LocalTarget(result_path + "-all.feather")]
         for k in ["all-cv"] + list(range(1, int(self.k_folds) + 1)):

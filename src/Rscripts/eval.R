@@ -19,7 +19,7 @@ features_conf <- args[[6]]
 model_conf <- args[[7]]
 validation_prop <- as.numeric(args[[8]])
 k_folds <- as.integer(args[[9]])
-cur_fold <- as.integer(args[[10]])
+cur_fold <- args[[10]]
 
 ## ---- libraries ----
 library("caret")
@@ -30,9 +30,11 @@ source("src/utils/eval_funs.R")
 
 ## ---- get-metrics ----
 y <- read_feather(y_path) %>%
+  select(count) %>%
   unlist() %>%
   as.numeric()
 y_hat <- read_feather(preds_path) %>%
+  select(y_hat) %>%
   unlist() %>%
   as.numeric()
 

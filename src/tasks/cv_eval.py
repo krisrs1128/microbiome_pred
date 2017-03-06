@@ -2,14 +2,15 @@ import luigi
 from luigi import configuration
 import subprocess
 
-import src.utils.pipeline_funs as pf
-from src.predict import Predict
+import src.tasks.pipeline_funs as pf
+from src.tasks.predict import Predict
 
 import logging
 import logging.config
 logging_conf = configuration.get_config().get("core", "logging_conf_file")
 logging.config.fileConfig(logging_conf)
 logger = logging.getLogger("microbiome.pred")
+
 
 class CVEval(luigi.Task):
     ps_path = luigi.Parameter()
@@ -44,19 +45,37 @@ class CVEval(luigi.Task):
             self.eval_metrics
         ]
 
-        y_path = pf.output_name(self.conf, specifiers_list[:3], "responses_") + \
-                    "-test-" + self.cur_fold  + ".feather"
-        pred_path = pf.output_name(self.conf, specifiers_list[:-2], "preds_") + \
-                    "-" + self.cur_fold + ".feather"
+        y_path = pf.output_name(
+            self.conf,
+            specifiers_list[:3],
+            "responses_",
+            "responses"
+        ) + "-test-" + self.cur_fold  + ".feather"
+        if self.cur_fold == "all":
+            y_path = y_path.replace("-test", "")
+
+        pred_path = pf.output_name(
+            self.conf,
+            specifiers_list[:-2],
+            "preds_",
+            "preds"
+        ) + "-" + self.cur_fold + ".feather"
+
+        output_path = pf.output_name(
+            self.conf,
+            specifiers_list,
+            "cv_eval_",
+            "eval"
+        ) + ".feather"
 
         return_code = subprocess.call(
             [
                 "Rscript",
-                pf.rscript_file(self.conf, "cv_eval.R"),
+                pf.rscript_file(self.conf, "eval.R"),
                 pred_path,
                 y_path,
                 self.eval_metrics,
-                pf.output_name(self.conf, specifiers_list, "cv_eval_") + ".feather",
+                output_path,
                 self.preprocess_conf,
                 self.features_conf,
                 self.model_conf,
@@ -67,7 +86,7 @@ class CVEval(luigi.Task):
         )
 
         if return_code != 0:
-            raise ValueError("cv_eval.R failed")
+            raise ValueError("eval.R failed")
 
     def output(self):
         specifiers_list = [
@@ -79,6 +98,11 @@ class CVEval(luigi.Task):
             self.cur_fold,
             self.eval_metrics
         ]
-        result_path = pf.output_name(self.conf, specifiers_list, "cv_eval_") + ".feather"
+        output_path = pf.output_name(
+            self.conf,
+            specifiers_list,
+            "cv_eval_",
+            "eval"
+        ) + ".feather"
 
-        return luigi.LocalTarget(result_path)
+        return luigi.LocalTarget(output_path)

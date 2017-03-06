@@ -17,6 +17,7 @@ output_path <- args[[3]]
 library("caret")
 library("dplyr")
 library("feather")
+source("src/utils/ensemble_funs.R")
 
 ## ---- train-model ----
 x <- read_feather(x_path)

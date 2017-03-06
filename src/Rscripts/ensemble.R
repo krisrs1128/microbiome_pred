@@ -1,8 +1,8 @@
 #! /usr/bin/env Rscript
 
 ## File description -------------------------------------------------------------
-## R script for ensembling results across trained models and saving predictions
-## to file.
+## R script for ensembling results across trained models and saving fitted
+## models to file.
 
 ## ---- arguments ----
 args <- commandArgs(trailingOnly = TRUE)
@@ -14,10 +14,9 @@ preds_basenames <- strsplit(args[[1]], ";")[[1]]
 models_basenames <- strsplit(args[[2]], ";")[[1]]
 y_basename <- args[[3]]
 k_folds <- as.integer(args[[4]])
-new_data_path <- args[[5]]
-output_path <- args[[6]]
-ensemble_conf <- args[[7]]
-ensemble_id <- args[[8]]
+output_path <- args[[5]]
+ensemble_conf <- args[[6]]
+ensemble_id <- args[[7]]
 
 ## ---- libraries ----
 library("caret")
@@ -47,10 +46,6 @@ for (k in c(seq_len(k_folds), "all-cv")) {
   }
 }
 
-new_data <- read_feather(new_data_path) %>%
-  select(-Meas_ID, -rsv) %>%
-  as.matrix()
-
 ## ---- ensemble-cv ----
 f <- get(ensemble_opts$method)
 
@@ -58,11 +53,7 @@ y_list <- rep(y_list, each = length(models_basenames))
 models_list <- unlist(models_list, recursive = FALSE)
 preds_list <- unlist(preds_list, recursive = FALSE)
 trained_ensemble <- f(models_list, preds_list, y_list)
-
-y_hat <- trained_ensemble$ens_predict(new_data) %>%
-  tbl_df() %>%
-  rename(y_hat = value)
-write_feather(y_hat, sprintf("%s-cv_trained.feather", output_path))
+save(trained_ensemble, file = sprintf("%s-cv_trained.RData", output_path))
 
 ## ---- ensemble-all ----
 ## no longer restrict ourselves to non-validation data
@@ -78,7 +69,4 @@ for (i in seq_along(models_basenames)) {
 }
 
 trained_ensemble <- f(models_list, preds_list, y_list)
-y_hat <- trained_ensemble$ens_predict(new_data) %>%
-  tbl_df() %>%
-  rename(y_hat = value)
-write_feather(y_hat, sprintf("%s-full_trained.feather", output_path))
+save(trained_ensemble, file = sprintf("%s-full_trained.RData", output_path))
