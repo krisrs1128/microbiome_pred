@@ -42,7 +42,7 @@ class EnsemblePredict(luigi.Task):
         pred_basename = pf.output_name(
             self.conf,
             self.ensemble_id,
-            "ensemble_preds-"
+            "ensemble_preds_"
         )
 
         model_basename = pf.output_name(
@@ -52,14 +52,16 @@ class EnsemblePredict(luigi.Task):
         )
 
         for train_type in ["cv", "full"]:
-            for test_type in ["all", "train-all-cv"]:
+            for test_type in ["all", "test-all-cv"]:
                 return_code = subprocess.call(
                     [
                         "Rscript",
                         pf.rscript_file(self.conf, "predict.R"),
                         x_basename + "-" + test_type + ".feather",
-                        model_basename + "-all-" + train_type + "_trained.RData",
-                        pred_basename + "-" + train_type + "_trained" + "-" + test_type + ".feather"
+                        model_basename + "-all-" + train_type +
+                        "_trained.RData",
+                        pred_basename + "-" + train_type +
+                        "_trained-" + test_type + ".feather"
                     ]
                 )
 
@@ -70,16 +72,15 @@ class EnsemblePredict(luigi.Task):
         pred_basename = pf.output_name(
             self.conf,
             self.ensemble_id,
-            "ensemble_preds-"
+            "ensemble_preds_"
         )
 
         outputs = []
         for train_type in ["cv", "full"]:
-            for test_type in ["all", "train-all-cv"]:
+            for test_type in ["all", "test-all-cv"]:
                 outputs.append(
                     luigi.LocalTarget(
-                        pred_basename + "-" + train_type + "_trained" + "-" + test_type + ".feather"
+                        pred_basename + "-" + train_type + "_trained-" + test_type + ".feather"
                     )
                 )
-
         return outputs
