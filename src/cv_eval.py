@@ -11,6 +11,7 @@ logging_conf = configuration.get_config().get("core", "logging_conf_file")
 logging.config.fileConfig(logging_conf)
 logger = logging.getLogger("microbiome.pred")
 
+
 class CVEval(luigi.Task):
     ps_path = luigi.Parameter()
     preprocess_conf = luigi.Parameter()
