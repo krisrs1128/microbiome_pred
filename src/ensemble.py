@@ -69,21 +69,33 @@ class Ensemble(luigi.Task):
             ]
 
             preds_basenames += pf.output_name(
-                self.conf, specifiers_list, "preds_"
+                self.conf,
+                specifiers_list,
+                "preds_",
+                "preds"
             ) + ";"
             models_basenames += pf.output_name(
-                self.conf, specifiers_list, "model_"
+                self.conf,
+                specifiers_list,
+                "model_",
+                "models"
             ) + ";"
 
             # These are assumed constant over experiments, so safe to overwrite
             y_basename = pf.output_name(
-                self.conf, specifiers_list[:3], "responses_"
+                self.conf,
+                specifiers_list[:3],
+                "responses_",
+                "responses"
             )
             k_folds = exper[i]["k_folds"]
 
         # Now call the ensemble script
         output_prefix = pf.output_name(
-            self.conf, self.ensemble_id, "ensemble_model-"
+            self.conf,
+            self.ensemble_id,
+            "ensemble_model-",
+            "models"
         )
 
         return_code = subprocess.call(
@@ -105,7 +117,10 @@ class Ensemble(luigi.Task):
 
     def output(self):
         output_prefix = pf.output_name(
-            self.conf, self.ensemble_id, "ensemble_model-"
+            self.conf,
+            self.ensemble_id,
+            "ensemble_model-",
+            "models"
         )
         suffixes = [
             "-all-cv_trained.RData",

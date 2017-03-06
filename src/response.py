@@ -13,21 +13,6 @@ logging.config.fileConfig(logging_conf)
 logger = logging.getLogger("microbiome.pred")
 
 
-def get_response_output_name(conf,
-                             preprocess_conf,
-                             validation_prop,
-                             k_folds) :
-    project_dir = conf.get("paths", "project_dir")
-    id_string = preprocess_conf + \
-                str(validation_prop) + \
-                str(k_folds)
-    return pf.processed_data_dir(
-        project_dir,
-        "responses_" +
-        pf.hash_name(id_string)
-    )
-
-
 class GetResponse(luigi.Task):
 
     ps_path = luigi.Parameter()
@@ -64,7 +49,12 @@ class GetResponse(luigi.Task):
                 self.input()[0].open("r").name,
                 self.input()[1].open("r").name,
                 self.ps_path,
-                pf.output_name(self.conf, specifiers_list, "responses_")
+                pf.output_name(
+                    self.conf,
+                    specifiers_list,
+                    "responses_",
+                    "responses"
+                )
             ]
         )
 
@@ -77,7 +67,12 @@ class GetResponse(luigi.Task):
             self.validation_prop,
             self.k_folds
         ]
-        result_path = pf.output_name(self.conf, specifiers_list, "responses_")
+        result_path = pf.output_name(
+            self.conf,
+            specifiers_list,
+            "responses_",
+            "responses"
+        )
 
         outputs = [luigi.LocalTarget(result_path + "-all.feather")]
         for k in ["all-cv"] + list(range(1, int(self.k_folds) + 1)):

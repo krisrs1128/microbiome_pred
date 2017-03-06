@@ -59,12 +59,12 @@ def rscript_file(conf, script):
     return os.path.join(rscript_dir(project_dir), script)
 
 
-def output_name(conf, specifiers_list, prefix):
+def output_name(conf, specifiers_list, prefix, subdir="./"):
     project_dir = conf.get("paths", "project_dir")
     id_string = "".join([str(s) for s in specifiers_list])
     return processed_data_dir(
         project_dir,
-        prefix + hash_name(id_string)
+        os.path.join(subdir, prefix + hash_name(id_string))
     )
 
 
@@ -78,4 +78,3 @@ def values_from_conf(conf, field_name):
         values = json.load(f)
 
     return values
-

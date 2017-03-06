@@ -52,7 +52,12 @@ class GetFeatures(luigi.Task):
                 self.input()[0].open("r").name,
                 self.input()[1].open("r").name,
                 self.ps_path,
-                pf.output_name(self.conf, specifiers_list, "features_")
+                pf.output_name(
+                    self.conf,
+                    specifiers_list,
+                    "features_",
+                    "features"
+                )
             ]
         )
 
@@ -66,7 +71,12 @@ class GetFeatures(luigi.Task):
             self.k_folds,
             self.features_conf
         ]
-        result_path = pf.output_name(self.conf, specifiers_list, "features_")
+        result_path = pf.output_name(
+            self.conf,
+            specifiers_list,
+            "features_",
+            "features"
+        )
 
         outputs = [luigi.LocalTarget(result_path + "-all.feather")]
         for k in ["all-cv"] + list(range(1, int(self.k_folds) + 1)):

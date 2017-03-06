@@ -42,15 +42,27 @@ class Predict(luigi.Task):
             self.model_conf
         ]
 
-        x_path = pf.output_name(self.conf, specifiers_list[:4], "features_") + \
-                    "-test-" + str(self.cur_fold)  + ".feather"
+        x_path = pf.output_name(
+            self.conf,
+            specifiers_list[:4],
+            "features_",
+            "features"
+        ) + "-test-" + str(self.cur_fold)  + ".feather"
         if str(self.cur_fold) == "all":
             x_path = x_path.replace("test-", "")
 
-        pred_path = pf.output_name(self.conf, specifiers_list, "preds_") + "-" + \
-                    str(self.cur_fold) + ".feather"
-        model_path = pf.output_name(self.conf, specifiers_list, "model_") + "-" + \
-                       str(self.cur_fold) + ".RData"
+        pred_path = pf.output_name(
+            self.conf,
+            specifiers_list,
+            "preds_",
+            "preds"
+        ) + "-" + str(self.cur_fold) + ".feather"
+        model_path = pf.output_name(
+            self.conf,
+            specifiers_list,
+            "model_",
+            "models"
+        ) + "-" + str(self.cur_fold) + ".RData"
 
         return_code = subprocess.call(
             [
@@ -73,7 +85,12 @@ class Predict(luigi.Task):
             self.features_conf,
             self.model_conf
         ]
-        pred_path = pf.output_name(self.conf, specifiers_list, "preds_") + "-" + \
-                    str(self.cur_fold) + ".feather"
+
+        pred_path = pf.output_name(
+            self.conf,
+            specifiers_list,
+            "preds_",
+            "preds"
+        ) + "-" + str(self.cur_fold) + ".feather"
 
         return luigi.LocalTarget(pred_path)

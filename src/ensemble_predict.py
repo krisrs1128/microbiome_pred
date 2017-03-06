@@ -36,19 +36,22 @@ class EnsemblePredict(luigi.Task):
         x_basename = pf.output_name(
             self.conf,
             specifiers_list,
-            "features_"
+            "features_",
+            "features"
         )
 
         pred_basename = pf.output_name(
             self.conf,
             self.ensemble_id,
-            "ensemble_preds_"
+            "ensemble_preds_",
+            "preds"
         )
 
         model_basename = pf.output_name(
             self.conf,
             self.ensemble_id,
-            "ensemble_model-"
+            "ensemble_model-",
+            "models"
         )
 
         for train_type in ["cv", "full"]:
@@ -70,7 +73,8 @@ class EnsemblePredict(luigi.Task):
         pred_basename = pf.output_name(
             self.conf,
             self.ensemble_id,
-            "ensemble_preds_"
+            "ensemble_preds_",
+            "preds"
         )
 
         outputs = []

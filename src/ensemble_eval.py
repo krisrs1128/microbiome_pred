@@ -35,17 +35,20 @@ class EnsembleEval(luigi.Task):
         y_basename = pf.output_name(
             self.conf,
             specifiers_list,
-            "responses_"
+            "responses_",
+            "responses"
         )
         pred_basename = pf.output_name(
             self.conf,
             self.ensemble_id,
-            "ensemble_preds_"
+            "ensemble_preds_",
+            "preds"
         )
         output_basename = pf.output_name(
             self.conf,
             self.ensemble_id,
-            "ensemble_eval_"
+            "ensemble_eval_",
+            "eval"
         )
 
         for train_type in ["cv", "full"]:
@@ -53,7 +56,7 @@ class EnsembleEval(luigi.Task):
                 return_code = subprocess.call(
                     [
                         "Rscript",
-                        pf.rscript_file(self.conf, "cv_eval.R"),
+                        pf.rscript_file(self.conf, "eval.R"),
                         pred_basename + "-" + train_type + "_trained-" + test_type + ".feather",
                         y_basename + "-" + test_type + ".feather",
                         properties["metrics"],
@@ -68,13 +71,14 @@ class EnsembleEval(luigi.Task):
                 )
 
         if return_code != 0:
-            raise ValueError("cv_eval.R failed")
+            raise ValueError("eval.R failed")
 
     def output(self):
         output_basename = pf.output_name(
             self.conf,
             self.ensemble_id,
-            "ensemble_eval_"
+            "ensemble_eval_",
+            "eval"
         )
 
         output_names = []
