@@ -1,7 +1,9 @@
 {
     "asinh_transform": {},
+    "filter_low_reads": {},
+    "filter_qcs": {},
     "variance_filter": {
         "top_k": 300
     },
-    "person_subsample": ["AAI", "AAF"]
+    "person_subsample": ["AAA", "AAI", "AAF"]
 }
