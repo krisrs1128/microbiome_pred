@@ -21,3 +21,47 @@ variance_filter <- function(ps, top_k = 100) {
   ps %>%
     filter_taxa(function(x) var(x) >= threshold, TRUE)
 }
+
+person_subsample <- function(ps, ids = NULL) {
+  if (is.null(ids)) {
+    ids <- unique(sample_data(ps)$Subject)
+  }
+  prune_samples(
+    sample_data(ps)$Subject %in% ids,
+    ps
+  )
+}
+
+filter_qcs <- function(ps) {
+  prune_samples(
+    sample_data(ps)$Subject != "DNA_QC",
+    ps
+  )
+}
+
+filter_low_reads <- function(ps) {
+  low_reads_meas <- c(
+    "M124",
+    "M416",
+    "M395",
+    "M472",
+    "M477",
+    "M478",
+    "M479",
+    "M480",
+    "M481",
+    "M482",
+    "M483",
+    "M485",
+    "M486",
+    "M487",
+    "M488",
+    "M491",
+    "M492",
+    "M495",
+    "M496"
+  )
+  prune_samples(
+    !(sample_data(ps)$Meas_ID %in% low_read_meas)
+  )
+}
