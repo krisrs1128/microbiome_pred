@@ -1,0 +1,7 @@
+{
+    "asinh_transform": {},
+    "variance_filter": {
+        "top_k": 300
+    },
+    "person_subsample": ["AAI", "AAF"]
+}
