@@ -2,6 +2,7 @@ library("ggplot2")
 library("plyr")
 library("dplyr")
 library("ggscaffold")
+library("feather")
 theme_set(min_theme())
 getwd()
 fit <- get(load("data/processed/models/model_186784021346493-all.RData"))
@@ -31,4 +32,12 @@ y_avg %>%
 
 y_avg %>%
   arrange(mean) %>%
-  head() 
+  head()
+
+## Just look at features and response
+X <- read_feather("../data/processed/features/features_714071826311278-all.feather")
+y <- read_feather("../data/processed/responses/responses_948515544148490-all.feather")
+
+## Look at response vs. predictions
+head(X)
+head(y)
