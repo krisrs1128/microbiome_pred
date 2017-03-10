@@ -1,0 +1,20 @@
+{
+    "exper_1": {
+        "id": 1,
+        "preprocessing": "conf/subsample_subject.json",
+        "validation_prop": 0.4,
+        "k_folds": 3,
+        "features": "conf/person_ids.json",
+        "model": "conf/rf.json",
+        "metrics": "rmse;mae"
+    },
+    "exper_2": {
+        "id": 2,
+        "preprocessing": "conf/subsample_subject.json",
+        "validation_prop": 0.4,
+        "k_folds": 3,
+        "features": "conf/person_ids.json",
+        "model": "conf/lm.json",
+        "metrics": "rmse;mae"
+    }
+}
