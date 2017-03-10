@@ -10,6 +10,7 @@ library("feather")
 library("phyloseq")
 library("zoo")
 library("caret")
+library("ape")
 
 ## ---- functions ----
 feature_fun_generator <- function(f, melted_counts, cv_data, ps) {
@@ -63,6 +64,20 @@ person_id <- function(melted_counts, ps) {
   subjects$Meas_ID = samples$Meas_ID
 
   melted_counts %>%
-    left_join(subjects) %>%
-    select(Meas_ID, rsv, starts_with("subject"))
+    left_join(subjects)
+}
+
+phylo_coords <- function(melted_counts, ps, k = 2) {
+  tree <- phy_tree(ps)
+  D <- cophenetic.phylo(tree)
+  coord <- cmdscale(D, k) %>%
+    data.frame()
+  colnames(coord) <- gsub("X", "phylo_coord_", colnames(coord))
+  coord$rsv <- rownames(coord)
+
+  melted_counts %>%
+    left_join(coord) %>%
+    left_join(sample_data(ps)) %>%
+    select(Meas_ID, rsv, starts_with("phylo_coord_")) %>%
+    as_data_frame()
 }
