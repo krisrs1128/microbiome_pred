@@ -54,9 +54,15 @@ cc_relday <- function(melted_counts, ps) {
 }
 
 person_id <- function(melted_counts, ps) {
-  model.matrix(
-    ~ subject - 1,
-    data = data.frame(subject = sample_data(ps)$Subject)
+  samples <- sample_data(ps)
+  subjects <- model.matrix(
+    ~ subject_ - 1,
+    data = data.frame("subject_" = samples$Subject)
   ) %>%
-    as.matrix()
+    as_data_frame()
+  subjects$Meas_ID = samples$Meas_ID
+
+  melted_counts %>%
+    left_join(subjects) %>%
+    select(Meas_ID, rsv, starts_with("subject"))
 }
