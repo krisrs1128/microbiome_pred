@@ -16,5 +16,23 @@
         "features": "conf/taxa_vars.json",
         "model": "conf/lm.json",
         "metrics": "rmse;mae"
+    },
+    "exper_3": {
+        "id": 3,
+        "preprocessing": "conf/subsample_subject.json",
+        "validation_prop": 0.4,
+        "k_folds": 3,
+        "features": "conf/all.json",
+        "model": "conf/rf.json",
+        "metrics": "rmse;mae"
+    },
+    "exper_2": {
+        "id": 4,
+        "preprocessing": "conf/subsample_subject.json",
+        "validation_prop": 0.4,
+        "k_folds": 3,
+        "features": "conf/all.json",
+        "model": "conf/lm.json",
+        "metrics": "rmse;mae"
     }
 }
