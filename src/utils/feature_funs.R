@@ -93,8 +93,9 @@ taxa_features <- function(melted_counts, ps, levels = c("Order", "Family")) {
   }
 
   taxa <- taxa[, c(levels, "rsv")]
-  melted_counts %>%
-    left_join(data.frame(taxa)) %>%
-    as_data_frame() %>%
-    select_(c("Meas_ID", "rsv", levels))
+  features <- melted_counts %>%
+    left_join(as_data_frame(taxa))
+  x <- model.matrix(~ -1 + Family + Order, features)
+  cbind(features %>% select(Meas_ID, rsv), x) %>%
+    as_data_frame()
 }
