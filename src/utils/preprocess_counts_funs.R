@@ -62,6 +62,7 @@ filter_low_reads <- function(ps) {
     "M496"
   )
   prune_samples(
-    !(sample_data(ps)$Meas_ID %in% low_read_meas)
+    !(sample_data(ps)$Meas_ID %in% low_reads_meas),
+    ps
   )
 }

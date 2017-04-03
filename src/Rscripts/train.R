@@ -20,6 +20,7 @@ library("caret")
 library("dplyr")
 library("feather")
 library("jsonlite")
+library("doParallel")
 
 ## ---- train-model ----
 x <- read_feather(x_path)
@@ -38,7 +39,11 @@ y <- y %>%
   unlist() %>%
   as.numeric()
 
+n_cores <- detectCores()
+cl <- makePSOCKcluster(n_cores)
+registerDoParallel(cl)
 model_res <- do.call(train, c(list("x" = x, "y" = y), model_opts))
+stopCluster(cl)
 
 ## ---- save-result ----
 save(model_res, file = output_path)
