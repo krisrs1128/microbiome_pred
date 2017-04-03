@@ -30,6 +30,7 @@ opts <- read_json(features_conf)
 
 ## ---- create-features ----
 ## Features split across cv folds
+dir.create(dirname(output_path), recursive = TRUE)
 for (k in c("all-cv", seq_len(max(cv_data$fold, na.rm = TRUE)))) {
   for (test_flag in c(TRUE, FALSE)) {
 
@@ -66,4 +67,5 @@ for (i in seq_along(opts)) {
       full_join(new_x)
   }
 }
+
 write_feather(x, sprintf("%s-all.feather", output_path))
