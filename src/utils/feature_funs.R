@@ -81,3 +81,15 @@ phylo_coords <- function(melted_counts, ps, k = 2) {
     select(Meas_ID, rsv, starts_with("phylo_coord_")) %>%
     as_data_frame()
 }
+
+phylo_ix <- function(melted_counts, ps) {
+  tree <- phy_tree(ps)
+  tip_map <- data_frame(
+    "rsv" = factor(tree$tip.label, levels = levels(melted_counts$rsv)),
+    "phylo_ix" = ntaxa(ps)
+  )
+
+  melted_counts %>%
+    left_join(tip_map) %>%
+    select(Meas_ID, rsv, phylo_ix)
+}
