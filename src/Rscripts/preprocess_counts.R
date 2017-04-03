@@ -29,4 +29,5 @@ for (i in seq_along(opts)) {
 }
 
 ## ---- write-output ----
+dir.create(dirname(output_path), recursive = TRUE)
 saveRDS(ps, output_path)

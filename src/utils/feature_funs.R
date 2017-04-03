@@ -64,7 +64,8 @@ person_id <- function(melted_counts, ps) {
   subjects$Meas_ID = samples$Meas_ID
 
   melted_counts %>%
-    left_join(subjects)
+    left_join(subjects) %>%
+    select(Meas_ID, rsv, starts_with("subject"))
 }
 
 phylo_coords <- function(melted_counts, ps, k = 2) {
@@ -77,7 +78,24 @@ phylo_coords <- function(melted_counts, ps, k = 2) {
 
   melted_counts %>%
     left_join(coord) %>%
-    left_join(sample_data(ps)) %>%
     select(Meas_ID, rsv, starts_with("phylo_coord_")) %>%
+    as_data_frame()
+}
+
+taxa_features <- function(melted_counts, ps, levels = c("Order", "Family")) {
+  taxa <- data.frame(tax_table(ps))
+  taxa$rsv <- rownames(taxa)
+  taxa <- sapply(taxa, as.character)
+
+  ## impute by deepest known level
+  for (i in seq_len(nrow(taxa))) {
+    taxa[i, ] <- na.locf(taxa[i, ])
+  }
+
+  taxa <- taxa[, c(levels, "rsv")]
+  features <- melted_counts %>%
+    left_join(as_data_frame(taxa))
+  x <- model.matrix(~ -1 + Family + Order, features)
+  cbind(features %>% select(Meas_ID, rsv), x) %>%
     as_data_frame()
 }

@@ -30,6 +30,7 @@ response_fun <- function(melted_counts, phyloseq_object) {
   melted_counts
 }
 
+dir.create(dirname(output_path), recursive = TRUE)
 for (k in c("all-cv", seq_len(max(cv_data$fold, na.rm = TRUE)))) {
   for (test_flag in c(TRUE, FALSE)) {
     cv_response <- feature_fun_generator(
