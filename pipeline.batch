@@ -26,7 +26,7 @@
 #number of nodes you are requesting, the more you ask for the longer you wait
 #SBATCH --nodes=1
 # request 8 cores
-#SBATCH --n 8
+#SBATCH --cores-per-socket=8
 #################
 # --mem is memory per node; default is 4000 MB per CPU, remember to ask for enough mem to match your CPU request, since
 # sherlock automatically allocates 8 Gigs of RAM/CPU, if you ask for 8 CPUs you will need 32 Gigs of RAM, so either
@@ -40,10 +40,10 @@
 
 ml git
 ml gcc/4.9.1
-ml R/3.3.0
+ml R/3.3.3.gcc
 ml python/3.3.2
 ml unload intel/2015
-ml load R/3.3.0
+ml load R/3.3.3.gcc
 
 cd /scratch/users/kriss1/programming/research/microbiome_pred/
 python3 pipeline.py MicrobiomePred --local-scheduler --workers=4
