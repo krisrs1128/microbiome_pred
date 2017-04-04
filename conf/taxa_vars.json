@@ -2,5 +2,6 @@
 	"taxa_features": {},
 	"phylo_coords": {
 		"k": 3
-	}
+	},
+  "phylo_ix": {}
 }
