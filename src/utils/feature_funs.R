@@ -11,6 +11,7 @@ library("phyloseq")
 library("zoo")
 library("caret")
 library("ape")
+library("tidyr")
 
 ## ---- functions ----
 feature_fun_generator <- function(f, melted_counts, cv_data, ps) {
