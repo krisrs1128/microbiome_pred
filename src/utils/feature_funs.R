@@ -111,3 +111,26 @@ taxa_features <- function(melted_counts, ps, levels = c("Order", "Family")) {
   cbind(features %>% select(Meas_ID, rsv), x) %>%
     as_data_frame()
 }
+
+pca_features <- function(melted_counts, ps, k = 3) {
+  ## Reshape data so we can take pca
+  x <- melted_counts %>%
+    spread(Meas_ID, count)
+  x_mat <- x %>%
+    select(-rsv) %>%
+    as.matrix()
+  x_mat[is.na(x_mat)] <- mean(x_mat)
+
+  ## Create a PCA approximation
+  pca_x <- princomp(x_mat)
+  evals <- pca_x$sdev
+  evals[-seq_len(k)] <- 0
+  x_coarse <- pca_x$scores %*% diag(evals) %*% t(pca_x$loadings)
+
+  ## Melt back into features format
+  cbind(
+    "rsv" = x$rsv,
+    as_data_frame(x_coarse)
+  ) %>%
+    gather("Meas_ID", "count", -rsv)
+}
