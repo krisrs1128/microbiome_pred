@@ -32,4 +32,5 @@ y_hat <- predict(model, newdata = x) %>%
   rename(y_hat = value)
 
 ## ---- save-result ----
+dir.create(dirname(output_path), recursive = TRUE)
 write_feather(y_hat, path = output_path)

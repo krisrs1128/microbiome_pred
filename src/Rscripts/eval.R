@@ -54,6 +54,7 @@ for (i in seq_along(eval_metrics)) {
   )
 }
 
+dir.create(dirname(output_path), recursive = TRUE)
 write_feather(
   data.table::rbindlist(err_list),
   path = output_path
