@@ -51,7 +51,7 @@ cc_relday <- function(melted_counts, ps) {
   melted_counts %>%
     left_join(samples) %>%
     select(Meas_ID, rsv, CC_RelDay) %>%
-    rename(relative_day = CC_RelDay)
+    dplyr::rename(relative_day = CC_RelDay)
 }
 
 person_id <- function(melted_counts, ps) {
