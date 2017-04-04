@@ -46,4 +46,5 @@ model_res <- do.call(train, c(list("x" = x, "y" = y), model_opts))
 stopCluster(cl)
 
 ## ---- save-result ----
+dir.create(dirname(output_path), recursive = TRUE)
 save(model_res, file = output_path)
