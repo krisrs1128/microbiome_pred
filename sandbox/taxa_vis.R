@@ -38,7 +38,7 @@ phylo_ix <- combined %>%
   rename(id = rsv)
 
 ggtree(
-  phy_tree(ps),
+  phy_tree(ps)
 ) +
   xlim_tree(0.3) %>%
   facet_plot(
