@@ -25,6 +25,7 @@ model_paths <- c(
   "data/processed/responses/",
   "data/processed/responses/"
   )
+ps <- readRDS("data/raw/ps.RDS")
 X <- read_feather(X_path)
 y <- read_feather(y_path)
 models <- lapply(model_paths, get(load))
@@ -36,17 +37,13 @@ combined <- X %>%
   gather_dummy("subject", "subject_") %>%
   mutate(
     order_top = recode_rare(order, 7),
-    family_top = recode_rare(family, 7)
+    family_top = recode_rare(family, 7),
+    jittered_count = count + runif(n(), 0, 0.2)
   )
 
 ###############################################################################
 # Study time effects
 ###############################################################################
-combined <- combined %>%
-  mutate(
-    jittered_count = count + runif(n(), 0, 0.2)
-  )
-
 p <- ggplot(combined) +
   geom_point(
     aes(x = relative_day, y = jittered_count, col = order_top),
@@ -75,3 +72,31 @@ y_hat <- lapply(models, predict) %>%
 ###############################################################################
 # Study predictions along tree
 ###############################################################################
+p <- ggtree(phy_tree(ps)) %>%
+  facet_plot(
+    "phylo_ix_early",
+    data = combined %>%
+      select(-Meas_ID) %>%
+      filter(relative_day < -10, subject == "AAI"),
+    geom = geom_point,
+    aes(x = jittered_count, y = y, col = order_top),
+    size = 0.4, alpha = 0.6
+  ) %>%
+  facet_plot(
+    "phylo_ix_mid",
+    data = combined %>%
+      select(-Meas_ID) %>%
+      filter(relative_day > -10, relative_day < 10, subject == "AAI"),
+    geom = geom_point,
+    aes(x = jittered_count, y = y, col = order_top),
+    size = 0.4, alpha = 0.6
+  ) %>%
+  facet_plot(
+    "phylo_ix_late",
+    data = combined %>%
+      select(-Meas_ID) %>%
+      filter(relative_day > 10, subject == "AAI"),
+    geom = geom_point,
+    aes(x = jittered_count, y = y, col = order_top),
+    size = 0.4, alpha = 0.6
+  )

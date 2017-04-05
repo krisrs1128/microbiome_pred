@@ -87,7 +87,7 @@ phylo_ix <- function(melted_counts, ps) {
   tree <- phy_tree(ps)
   tip_map <- data_frame(
     "rsv" = factor(tree$tip.label, levels = levels(melted_counts$rsv)),
-    "phylo_ix" = ntaxa(ps)
+    "phylo_ix" = seq_len(ntaxa(ps))
   )
 
   melted_counts %>%
