@@ -25,7 +25,7 @@ library("doParallel")
 ## ---- train-model ----
 x <- read_feather(x_path)
 y <- read_feather(y_path)
-model_opts <- read_json(model_conf)
+model_opts <- read_json(model_conf, simplifyDataFrame = TRUE)
 
 stopifnot(x$Meas_ID == y$Meas_ID)
 stopifnot(x$rsv == y$rsv)
@@ -41,6 +41,8 @@ y <- y %>%
 
 n_cores <- detectCores()
 registerDoParallel(cores = n_cores)
+model_opts$trainControl <- do.call(trainControl, model_opts$train_control_opts)
+model_opts$train_control_opts <- NULL
 model_res <- do.call(train, c(list("x" = x, "y" = y), model_opts))
 
 ## ---- save-result ----
