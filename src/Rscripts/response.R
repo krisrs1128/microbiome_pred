@@ -9,17 +9,27 @@ args <- commandArgs(trailingOnly = TRUE)
 message("Executing response.R with arguments:")
 message(paste(args, collapse = "\n"))
 
-melted_counts_path <- args[[1]]
-cv_data_path <- args[[2]]
-ps_path <- args[[3]]
-output_path <- args[[4]]
+response_type <- args[[1]]
+melted_counts_path <- args[[2]]
+cv_data_path <- args[[3]]
+ps_path <- args[[4]]
+output_path <- args[[5]]
 
 ## ---- libraries ----
 library("plyr")
 library("dplyr")
 library("feather")
-source("src/utils/response_funs.R")
 source("src/utils/feature_funs.R")
+
+## ---- response-functions ----
+continuous_response <- function(melted_counts, phyloseq_object) {
+  melted_counts
+}
+
+binary_response <- function(melted_counts, phyloseq_object) {
+  melted_counts$counts <- ifelse(melted_counts$counts > 0, 1, 0)
+  melted_counts
+}
 
 ## ---- read-input ----
 melted_counts <- read_feather(melted_counts_path)
@@ -31,7 +41,7 @@ dir.create(dirname(output_path), recursive = TRUE)
 for (k in c("all-cv", seq_len(max(cv_data$fold, na.rm = TRUE)))) {
   for (test_flag in c(TRUE, FALSE)) {
     cv_response <- feature_fun_generator(
-      response_fun,
+      ifelse(response_type == "continuous", continuous_response, binary_response),
       melted_counts,
       cv_data,
       phyloseq_object
