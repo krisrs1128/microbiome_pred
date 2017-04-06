@@ -1,0 +1,298 @@
+{
+  "method": "conf/gbm_binarize.RData",
+  "train_control_opts": {
+    "method": "repeatedcv",
+    "number": 5,
+    "repeats": 1
+  },
+  "tuneGrid": [
+    {
+      "max_depth": 1,
+      "nrounds": 50,
+      "eta": 0.3,
+      "gamma": 0,
+      "colsample_bytree": 0.6,
+      "min_child_weight": 1,
+      "subsample": 0.5
+    },
+    {
+      "max_depth": 2,
+      "nrounds": 50,
+      "eta": 0.3,
+      "gamma": 0,
+      "colsample_bytree": 0.6,
+      "min_child_weight": 1,
+      "subsample": 0.5
+    },
+    {
+      "max_depth": 1,
+      "nrounds": 100,
+      "eta": 0.3,
+      "gamma": 0,
+      "colsample_bytree": 0.6,
+      "min_child_weight": 1,
+      "subsample": 0.5
+    },
+    {
+      "max_depth": 2,
+      "nrounds": 100,
+      "eta": 0.3,
+      "gamma": 0,
+      "colsample_bytree": 0.6,
+      "min_child_weight": 1,
+      "subsample": 0.5
+    },
+    {
+      "max_depth": 1,
+      "nrounds": 50,
+      "eta": 0.4,
+      "gamma": 0,
+      "colsample_bytree": 0.6,
+      "min_child_weight": 1,
+      "subsample": 0.5
+    },
+    {
+      "max_depth": 2,
+      "nrounds": 50,
+      "eta": 0.4,
+      "gamma": 0,
+      "colsample_bytree": 0.6,
+      "min_child_weight": 1,
+      "subsample": 0.5
+    },
+    {
+      "max_depth": 1,
+      "nrounds": 100,
+      "eta": 0.4,
+      "gamma": 0,
+      "colsample_bytree": 0.6,
+      "min_child_weight": 1,
+      "subsample": 0.5
+    },
+    {
+      "max_depth": 2,
+      "nrounds": 100,
+      "eta": 0.4,
+      "gamma": 0,
+      "colsample_bytree": 0.6,
+      "min_child_weight": 1,
+      "subsample": 0.5
+    },
+    {
+      "max_depth": 1,
+      "nrounds": 50,
+      "eta": 0.3,
+      "gamma": 0,
+      "colsample_bytree": 0.8,
+      "min_child_weight": 1,
+      "subsample": 0.5
+    },
+    {
+      "max_depth": 2,
+      "nrounds": 50,
+      "eta": 0.3,
+      "gamma": 0,
+      "colsample_bytree": 0.8,
+      "min_child_weight": 1,
+      "subsample": 0.5
+    },
+    {
+      "max_depth": 1,
+      "nrounds": 100,
+      "eta": 0.3,
+      "gamma": 0,
+      "colsample_bytree": 0.8,
+      "min_child_weight": 1,
+      "subsample": 0.5
+    },
+    {
+      "max_depth": 2,
+      "nrounds": 100,
+      "eta": 0.3,
+      "gamma": 0,
+      "colsample_bytree": 0.8,
+      "min_child_weight": 1,
+      "subsample": 0.5
+    },
+    {
+      "max_depth": 1,
+      "nrounds": 50,
+      "eta": 0.4,
+      "gamma": 0,
+      "colsample_bytree": 0.8,
+      "min_child_weight": 1,
+      "subsample": 0.5
+    },
+    {
+      "max_depth": 2,
+      "nrounds": 50,
+      "eta": 0.4,
+      "gamma": 0,
+      "colsample_bytree": 0.8,
+      "min_child_weight": 1,
+      "subsample": 0.5
+    },
+    {
+      "max_depth": 1,
+      "nrounds": 100,
+      "eta": 0.4,
+      "gamma": 0,
+      "colsample_bytree": 0.8,
+      "min_child_weight": 1,
+      "subsample": 0.5
+    },
+    {
+      "max_depth": 2,
+      "nrounds": 100,
+      "eta": 0.4,
+      "gamma": 0,
+      "colsample_bytree": 0.8,
+      "min_child_weight": 1,
+      "subsample": 0.5
+    },
+    {
+      "max_depth": 1,
+      "nrounds": 50,
+      "eta": 0.3,
+      "gamma": 0,
+      "colsample_bytree": 0.6,
+      "min_child_weight": 1,
+      "subsample": 1
+    },
+    {
+      "max_depth": 2,
+      "nrounds": 50,
+      "eta": 0.3,
+      "gamma": 0,
+      "colsample_bytree": 0.6,
+      "min_child_weight": 1,
+      "subsample": 1
+    },
+    {
+      "max_depth": 1,
+      "nrounds": 100,
+      "eta": 0.3,
+      "gamma": 0,
+      "colsample_bytree": 0.6,
+      "min_child_weight": 1,
+      "subsample": 1
+    },
+    {
+      "max_depth": 2,
+      "nrounds": 100,
+      "eta": 0.3,
+      "gamma": 0,
+      "colsample_bytree": 0.6,
+      "min_child_weight": 1,
+      "subsample": 1
+    },
+    {
+      "max_depth": 1,
+      "nrounds": 50,
+      "eta": 0.4,
+      "gamma": 0,
+      "colsample_bytree": 0.6,
+      "min_child_weight": 1,
+      "subsample": 1
+    },
+    {
+      "max_depth": 2,
+      "nrounds": 50,
+      "eta": 0.4,
+      "gamma": 0,
+      "colsample_bytree": 0.6,
+      "min_child_weight": 1,
+      "subsample": 1
+    },
+    {
+      "max_depth": 1,
+      "nrounds": 100,
+      "eta": 0.4,
+      "gamma": 0,
+      "colsample_bytree": 0.6,
+      "min_child_weight": 1,
+      "subsample": 1
+    },
+    {
+      "max_depth": 2,
+      "nrounds": 100,
+      "eta": 0.4,
+      "gamma": 0,
+      "colsample_bytree": 0.6,
+      "min_child_weight": 1,
+      "subsample": 1
+    },
+    {
+      "max_depth": 1,
+      "nrounds": 50,
+      "eta": 0.3,
+      "gamma": 0,
+      "colsample_bytree": 0.8,
+      "min_child_weight": 1,
+      "subsample": 1
+    },
+    {
+      "max_depth": 2,
+      "nrounds": 50,
+      "eta": 0.3,
+      "gamma": 0,
+      "colsample_bytree": 0.8,
+      "min_child_weight": 1,
+      "subsample": 1
+    },
+    {
+      "max_depth": 1,
+      "nrounds": 100,
+      "eta": 0.3,
+      "gamma": 0,
+      "colsample_bytree": 0.8,
+      "min_child_weight": 1,
+      "subsample": 1
+    },
+    {
+      "max_depth": 2,
+      "nrounds": 100,
+      "eta": 0.3,
+      "gamma": 0,
+      "colsample_bytree": 0.8,
+      "min_child_weight": 1,
+      "subsample": 1
+    },
+    {
+      "max_depth": 1,
+      "nrounds": 50,
+      "eta": 0.4,
+      "gamma": 0,
+      "colsample_bytree": 0.8,
+      "min_child_weight": 1,
+      "subsample": 1
+    },
+    {
+      "max_depth": 2,
+      "nrounds": 50,
+      "eta": 0.4,
+      "gamma": 0,
+      "colsample_bytree": 0.8,
+      "min_child_weight": 1,
+      "subsample": 1
+    },
+    {
+      "max_depth": 1,
+      "nrounds": 100,
+      "eta": 0.4,
+      "gamma": 0,
+      "colsample_bytree": 0.8,
+      "min_child_weight": 1,
+      "subsample": 1
+    },
+    {
+      "max_depth": 2,
+      "nrounds": 100,
+      "eta": 0.4,
+      "gamma": 0,
+      "colsample_bytree": 0.8,
+      "min_child_weight": 1,
+      "subsample": 1
+    }
+  ]
+}
