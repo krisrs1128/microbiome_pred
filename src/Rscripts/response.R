@@ -18,6 +18,7 @@ output_path <- args[[4]]
 library("plyr")
 library("dplyr")
 library("feather")
+source("src/utils/response_funs.R")
 source("src/utils/feature_funs.R")
 
 ## ---- read-input ----
@@ -26,10 +27,6 @@ cv_data <- read_feather(cv_data_path)
 phyloseq_object <- readRDS(ps_path)
 
 ## ---- create-responses ----
-response_fun <- function(melted_counts, phyloseq_object) {
-  melted_counts
-}
-
 dir.create(dirname(output_path), recursive = TRUE)
 for (k in c("all-cv", seq_len(max(cv_data$fold, na.rm = TRUE)))) {
   for (test_flag in c(TRUE, FALSE)) {
