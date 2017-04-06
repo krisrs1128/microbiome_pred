@@ -51,7 +51,7 @@ y <- y %>%
 
 cl <- makeCluster(min(4, detectCores()))
 registerDoParallel(cl)
-model_res2 <- do.call(train, c(list("x" = x, "y" = y), model_opts))
+model_res <- do.call(train, c(list("x" = x, "y" = y), model_opts))
 
 ## ---- save-result ----
 dir.create(dirname(output_path), recursive = TRUE)
