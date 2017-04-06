@@ -1,5 +1,5 @@
 {
-  "method": "rf",
+  "method": "conf/rf_pos.RData",
   "train_control_opts": {
     "method": "repeatedcv",
     "number": 5,
