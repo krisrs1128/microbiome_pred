@@ -5,7 +5,25 @@
     "validation_prop": 0.4,
     "k_folds": 3,
     "features": "conf/all.json",
-    "model": "conf/rf.json",
-    "metrics": "rmse;mae"
+    "model": "conf/rpart_pos.json",
+    "metrics": "rmse;mae;precision_at_90;precision_at_60"
+  },
+  "exper_2": {
+    "id": 2,
+    "preprocessing": "conf/subsample_subject.json",
+    "validation_prop": 0.4,
+    "k_folds": 3,
+    "features": "conf/all.json",
+    "model": "conf/rpart_binarize.json",
+    "metrics": "rmse;mae;precision_at_90;precision_at_60"
+  },
+  "exper_3": {
+    "id": 3,
+    "preprocessing": "conf/subsample_subject.json",
+    "validation_prop": 0.4,
+    "k_folds": 3,
+    "features": "conf/all.json",
+    "model": "conf/rpart.json",
+    "metrics": "rmse;mae;precision_at_90;precision_at_60"
   }
 }

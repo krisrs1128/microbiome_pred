@@ -4,6 +4,5 @@
     "method": "repeatedcv",
     "number": 5,
     "repeats": 1
-  },
-  "tuneGrid": [{"cp":0.001}]
+  }
 }
