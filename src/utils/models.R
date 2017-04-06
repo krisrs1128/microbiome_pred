@@ -54,3 +54,15 @@ conditional_positive_model <- function(model_info) {
   new_model_info$fit <- conditional_positive_fit(model_info$fit)
   new_model_info
 }
+
+binarize_fit <- function(fit_fun, threshold = 0) {
+  function(x, y, wts, param, lev, last, classProbs, ...) {
+    fit_fun(x, y > threshold, wts, param, lev, last, classProbs, ...)
+  }
+}
+
+binarize_model <- function(model_info) {
+  new_model_info <- model_info
+  new_model_info$fit <- binarize_fit(model_info$fit)
+  new_model_info
+}

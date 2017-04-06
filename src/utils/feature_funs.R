@@ -46,7 +46,7 @@ feature_fun_generator <- function(f, melted_counts, cv_data, ps) {
 #' @examples
 #' cv_cc_relday <- feature_fun_generator(cc_relday, melted_counts, cv_data, ps)
 #' holdout <- cv_cc_relday(FALSE, 1)
-cc_relday <- function(melted_counts, ps) {
+relative_day <- function(melted_counts, ps) {
   samples <- sample_data(ps)
   samples$CC_RelDay <- na.locf(samples$CC_RelDay)
   melted_counts %>%
@@ -95,7 +95,7 @@ phylo_ix <- function(melted_counts, ps) {
     select(Meas_ID, rsv, phylo_ix)
 }
 
-taxa_features <- function(melted_counts, ps, levels = c("Order", "Family")) {
+taxa_features <- function(melted_counts, ps, levels = "Order") {
   taxa <- data.frame(tax_table(ps))
   taxa$rsv <- rownames(taxa)
   taxa <- sapply(taxa, as.character)
@@ -108,7 +108,8 @@ taxa_features <- function(melted_counts, ps, levels = c("Order", "Family")) {
   taxa <- taxa[, c(levels, "rsv")]
   features <- melted_counts %>%
     left_join(as_data_frame(taxa))
-  x <- model.matrix(~ -1 + Family + Order, features)
+  fmla <- formula(sprintf("~ -1 + %s", paste0(levels, collapse = "+")))
+  x <- model.matrix(fmla, features)
   cbind(features %>% select(Meas_ID, rsv), x) %>%
     as_data_frame()
 }
