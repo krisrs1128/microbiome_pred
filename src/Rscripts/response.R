@@ -9,11 +9,10 @@ args <- commandArgs(trailingOnly = TRUE)
 message("Executing response.R with arguments:")
 message(paste(args, collapse = "\n"))
 
-response_type <- args[[1]]
-melted_counts_path <- args[[2]]
-cv_data_path <- args[[3]]
-ps_path <- args[[4]]
-output_path <- args[[5]]
+melted_counts_path <- args[[1]]
+cv_data_path <- args[[2]]
+ps_path <- args[[3]]
+output_path <- args[[4]]
 
 ## ---- libraries ----
 library("plyr")
