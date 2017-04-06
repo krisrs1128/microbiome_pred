@@ -22,12 +22,7 @@ library("feather")
 source("src/utils/feature_funs.R")
 
 ## ---- response-functions ----
-continuous_response <- function(melted_counts, phyloseq_object) {
-  melted_counts
-}
-
-binary_response <- function(melted_counts, phyloseq_object) {
-  melted_counts$counts <- ifelse(melted_counts$counts > 0, 1, 0)
+response_fun <- function(melted_counts, phyloseq_object) {
   melted_counts
 }
 
@@ -41,7 +36,7 @@ dir.create(dirname(output_path), recursive = TRUE)
 for (k in c("all-cv", seq_len(max(cv_data$fold, na.rm = TRUE)))) {
   for (test_flag in c(TRUE, FALSE)) {
     cv_response <- feature_fun_generator(
-      ifelse(response_type == "continuous", continuous_response, binary_response),
+      response_fun,
       melted_counts,
       cv_data,
       phyloseq_object
