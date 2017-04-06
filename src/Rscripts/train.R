@@ -20,6 +20,7 @@ library("caret")
 library("dplyr")
 library("feather")
 library("jsonlite")
+library("tools")
 library("doParallel")
 source("src/utils/models.R")
 
@@ -29,8 +30,8 @@ y <- read_feather(y_path)
 
 ## ---- convert-model-opts ----
 model_opts <- read_json(model_conf, simplifyVector = TRUE, simplifyDataFrame = TRUE)
-if (!is.character(model_opts$method)) {
-  model_opts$method <- parse_method_opts(model_opts$method)
+if (file_ext(model_opts$method) == "RData") {
+  model_opts$method <- get(load(model_opts$method))
 }
 model_opts$trControl <- do.call(trainControl, model_opts$train_control_opts)
 model_opts$train_control_opts <- NULL
@@ -50,7 +51,7 @@ y <- y %>%
 
 cl <- makeCluster(min(4, detectCores()))
 registerDoParallel(cl)
-model_res <- do.call(train, c(list("x" = x, "y" = y), model_opts))
+model_res2 <- do.call(train, c(list("x" = x, "y" = y), model_opts))
 
 ## ---- save-result ----
 dir.create(dirname(output_path), recursive = TRUE)
