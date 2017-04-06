@@ -54,24 +54,3 @@ conditional_positive_model <- function(model_info) {
   new_model_info$fit <- conditional_positive_fit(model_info$fit)
   new_model_info
 }
-
-parse_method_opts <- function(method_opts) {
-  parse_elems <- c(
-    "grid",
-    "loop",
-    "fit",
-    "predict",
-    "prob",
-    "predictors",
-    "varImp",
-    "levels",
-    "trim",
-    "sort"
-  )
-  for (i in seq_along(parse_elems)) {
-    if (parse_elems[i] %in% names(method_opts)) {
-      method_opts[[parse_elems[i]]] <- eval(parse(text = method_opts[[parse_elems[[i]]]]))
-    }
-  }
-  method_opts
-}
