@@ -84,9 +84,12 @@ phylo_coords <- function(melted_counts, ps, k = 2) {
 }
 
 phylo_ix <- function(melted_counts, ps) {
-  tree <- phy_tree(ps)
+  tree <- ape::ladderize(phy_tree(ps))
+  is_tip <- tree$edge[, 2] <= length(tree$tip.label)
+  ordered_tips <- tree$edge[is_tip, 2]
+
   tip_map <- data_frame(
-    "rsv" = factor(tree$tip.label, levels = levels(melted_counts$rsv)),
+    "rsv" = factor(tree$tip.label[ordered_tips], levels = levels(melted_counts$rsv)),
     "phylo_ix" = seq_len(ntaxa(ps))
   )
 
