@@ -21,21 +21,10 @@ scale_fill_discrete <- function(...)
 ## Not the cv-fold data
 X_path <- "data/processed/features/features_772570831040539-all.feather"
 y_path <- "data/processed/responses/responses_616901990044369-all.feather"
-model_paths <- list.files("data/processed/models/", "*.RData", full.names = TRUE)
+model_paths <- list.files("data/processed/models/", "all.RData", full.names = TRUE)
 ps <- readRDS("data/raw/ps.RDS")
 X <- read_feather(X_path)
 y <- read_feather(y_path)
-models <- lapply(model_paths, function(x) get(load(x)))
-
-combined <- X %>%
-  left_join(y) %>%
-  gather_dummy("order", "Order") %>%
-  gather_dummy("subject", "subject_") %>%
-  mutate(
-    order_top = recode_rare(order, 7),
-    jittered_count = count + runif(n(), 0, 0.5),
-    binarized_count = ifelse(count > 0, 0, 1)
-  )
 
 ###############################################################################
 # Study time effects
@@ -56,16 +45,27 @@ z <- X %>%
   select(-Meas_ID)
 dir.create("data/sandbox", recursive = TRUE)
 
-for (i in seq_along(models)) {
+for (i in seq_along(model_paths)) {
   cat(sprintf("Computing dependences for model %s\n", i))
-  if (!is.null(models$method)) { ## don't do this for ensemble models
-    f_bar <- partial_dependence(models[[i]], x, z)
+  model <- get(load(model_paths[[i]]))
+  if (!is.null(model$method)) { ## don't do this for ensemble models
+    f_bar <- partial_dependence(model, x, z)
     write_feather(
       cbind(x_pre, f_bar),
       sprintf("data/sandbox/f_bar_rday_model_%s.feather", i)
     )
   }
-} 
+}
+
+combined <- X %>%
+  left_join(y) %>%
+  gather_dummy("order", "Order") %>%
+  gather_dummy("subject", "subject_") %>%
+  mutate(
+    order_top = recode_rare(order, 7),
+    jittered_count = count + runif(n(), 0, 0.5),
+    binarized_count = ifelse(count > 0, 0, 1)
+  )
 
 p <- ggplot(combined) +
   geom_point(
