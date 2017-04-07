@@ -21,24 +21,20 @@ scale_fill_discrete <- function(...)
 ## Not the cv-fold data
 X_path <- "data/processed/features/features_772570831040539-all.feather"
 y_path <- "data/processed/responses/responses_616901990044369-all.feather"
-model_paths <- c(
-  "data/processed/responses/",
-  "data/processed/responses/"
-  )
+model_paths <- list.files("data/processed/models/", "*.RData", full.names = TRUE)
 ps <- readRDS("data/raw/ps.RDS")
 X <- read_feather(X_path)
 y <- read_feather(y_path)
-models <- lapply(model_paths, get(load))
+models <- lapply(model_paths, function(x) get(load(x)))
 
 combined <- X %>%
   left_join(y) %>%
-  gather_dummy("family", "Family")  %>%
   gather_dummy("order", "Order") %>%
   gather_dummy("subject", "subject_") %>%
   mutate(
     order_top = recode_rare(order, 7),
-    family_top = recode_rare(family, 7),
-    jittered_count = count + runif(n(), 0, 0.2)
+    jittered_count = count + runif(n(), 0, 0.5),
+    binarized_count = ifelse(count > 0, 0, 1)
   )
 
 ###############################################################################
@@ -46,18 +42,42 @@ combined <- X %>%
 ###############################################################################
 p <- ggplot(combined) +
   geom_point(
-    aes(x = relative_day, y = jittered_count, col = order_top),
-    size = 0.5, alpha = 0.2,
+    aes(x = relative_day, y = jittered_count),
+    size = 0.5, alpha = 0.1,
   ) +
   geom_line(
-    aes(x = relative_day, y = jittered_count, col = order_top, group = rsv),
-    size = 0.5, alpha = 0.1
+    aes(x = relative_day, y = jittered_count, group = rsv),
+    size = 0.3, alpha = 0.1
   ) +
-  facet_grid(. ~ subject, scale = "free_x") +
-  guides(color = guide_legend(override.aes = list(alpha = 1)))
+  facet_grid(subject ~ order_top) +
+  guides(color = guide_legend(override.aes = list(alpha = 1))) +
+  theme(
+    panel.border = element_rect(fill = "transparent", size = 0.2)
+  )
 
 p <- p +
-  xlim(-15, 15)
+  xlim(-100, 50)
+
+ggplot(combined %>%
+       group_by(subject, relative_day, order_top) %>%
+       summarise(
+         prop_nonzero = mean(binarized_count),
+         prop_lower = max(0, prop_nonzero - 1.96 * sd(binarized_count) / sqrt(n())),
+         prop_upper = min(1, prop_nonzero + 1.96 * sd(binarized_count) / sqrt(n()))
+       )
+       ) +
+  geom_point(
+    aes(x = relative_day, y = prop_nonzero)
+  ) +
+  geom_line(
+    aes(x = relative_day, y = prop_nonzero),
+    alpha = 0.5
+  ) +
+  geom_errorbar(
+    aes(x = relative_day, ymax = prop_upper, ymin = prop_lower)
+  ) +
+  facet_grid(subject ~ order_top) +
+  xlim(-100, 50)
 
 ###############################################################################
 # Compare predicted vs. true histograms
