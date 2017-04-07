@@ -69,16 +69,16 @@ partial_dependence_write <- function(model_paths, input_data, output_basename) {
   for (i in seq_along(model_paths)) {
     cat(sprintf("Computing dependences for model %s\n", i))
     model <- get(load(model_paths[[i]]))
-    if (!is.null(model$method)) { ## don't do this for ensemble models
-      f_bar <- partial_dependence(model, input_data$x, input_data$z)
+    f_bar <- try(partial_dependence(model, input_data$x, input_data$z))
+    if (class(f_bar) != "try-error") {
       feather::write_feather(
-        cbind(
-          method = model$modelInfo$label,
-          input_data$x_grid,
-          f_bar
-        ),
-        sprintf("%s_%s.feather", output_basename, i)
-      )
+                 cbind(
+                   method = model$modelInfo$label,
+                   input_data$x_grid,
+                   f_bar
+                 ),
+                 sprintf("%s_%s.feather", output_basename, i)
+               )
     }
   }
 }
