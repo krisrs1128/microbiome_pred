@@ -30,6 +30,16 @@ y <- read_feather(y_path)
 # Study time effects
 ###############################################################################
 
+combined <- X %>%
+  left_join(y) %>%
+  gather_dummy("order", "Order") %>%
+  gather_dummy("subject", "subject_") %>%
+  mutate(
+    order_top = recode_rare(order, 7),
+    jittered_count = count + runif(n(), 0, 0.5),
+    binarized_count = ifelse(count > 0, 0, 1)
+  )
+
 ## Get partial dependence, after averaging out phylogenetic features
 x_pre <- expand.grid(
   "relative_day" = seq(-100, 50),
@@ -56,16 +66,6 @@ for (i in seq_along(model_paths)) {
     )
   }
 }
-
-combined <- X %>%
-  left_join(y) %>%
-  gather_dummy("order", "Order") %>%
-  gather_dummy("subject", "subject_") %>%
-  mutate(
-    order_top = recode_rare(order, 7),
-    jittered_count = count + runif(n(), 0, 0.5),
-    binarized_count = ifelse(count > 0, 0, 1)
-  )
 
 p <- ggplot(combined) +
   geom_point(
