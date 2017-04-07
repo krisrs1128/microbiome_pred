@@ -40,6 +40,33 @@ combined <- X %>%
 ###############################################################################
 # Study time effects
 ###############################################################################
+
+## Get partial dependence, after averaging out phylogenetic features
+x_pre <- expand.grid(
+  "relative_day" = seq(-100, 50),
+  "Order" = setdiff(unique(combined$order_top), "other"),
+  "subject_" = c("AAA", "AAI")
+)
+x <- model.matrix(relative_day ~ -1 + subject_ + Order, x_pre)
+x <- cbind("relative_day" = x_pre$relative_day, x) %>%
+  as_data_frame()
+
+z <- X %>%
+  select_(.dots = setdiff(colnames(X), colnames(x))) %>%
+  select(-Meas_ID)
+dir.create("data/sandbox", recursive = TRUE)
+
+for (i in seq_along(models)) {
+  cat(sprintf("Computing dependences for model %s\n", i))
+  if (!is.null(models$method)) { ## don't do this for ensemble models
+    f_bar <- partial_dependence(models[[i]], x, z)
+    write_feather(
+      cbind(x_pre, f_bar),
+      sprintf("data/sandbox/f_bar_rday_model_%s.feather", i)
+    )
+  }
+} 
+
 p <- ggplot(combined) +
   geom_point(
     aes(x = relative_day, y = jittered_count),
@@ -48,6 +75,15 @@ p <- ggplot(combined) +
   geom_line(
     aes(x = relative_day, y = jittered_count, group = rsv),
     size = 0.3, alpha = 0.1
+  ) +
+  geom_line(
+    data = cbind(x_pre, f_bar) %>%
+      rename(
+        order_top = Order,
+        subject = subject_
+      ),
+    aes(x = relative_day, y = f_bar),
+    size = 0.3, alpha = 1, col = "purple"
   ) +
   facet_grid(subject ~ order_top) +
   guides(color = guide_legend(override.aes = list(alpha = 1))) +
@@ -58,7 +94,7 @@ p <- ggplot(combined) +
 p <- p +
   xlim(-100, 50)
 
-ggplot(combined %>%
+p <- ggplot(combined %>%
        group_by(subject, relative_day, order_top) %>%
        summarise(
          prop_nonzero = mean(binarized_count),
@@ -67,14 +103,16 @@ ggplot(combined %>%
        )
        ) +
   geom_point(
-    aes(x = relative_day, y = prop_nonzero)
+    aes(x = relative_day, y = prop_nonzero),
+    alpha = 0.5
   ) +
   geom_line(
     aes(x = relative_day, y = prop_nonzero),
     alpha = 0.5
   ) +
   geom_errorbar(
-    aes(x = relative_day, ymax = prop_upper, ymin = prop_lower)
+    aes(x = relative_day, ymax = prop_upper, ymin = prop_lower),
+    alpha = 0.2
   ) +
   facet_grid(subject ~ order_top) +
   xlim(-100, 50)
