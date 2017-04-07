@@ -21,43 +21,83 @@ scale_fill_discrete <- function(...)
 ## Not the cv-fold data
 X_path <- "data/processed/features/features_772570831040539-all.feather"
 y_path <- "data/processed/responses/responses_616901990044369-all.feather"
-model_paths <- c(
-  "data/processed/responses/",
-  "data/processed/responses/"
-  )
+model_paths <- list.files("data/processed/models/", "all.RData", full.names = TRUE)
 ps <- readRDS("data/raw/ps.RDS")
 X <- read_feather(X_path)
 y <- read_feather(y_path)
-models <- lapply(model_paths, get(load))
-
-combined <- X %>%
-  left_join(y) %>%
-  gather_dummy("family", "Family")  %>%
-  gather_dummy("order", "Order") %>%
-  gather_dummy("subject", "subject_") %>%
-  mutate(
-    order_top = recode_rare(order, 7),
-    family_top = recode_rare(family, 7),
-    jittered_count = count + runif(n(), 0, 0.2)
-  )
 
 ###############################################################################
 # Study time effects
 ###############################################################################
+
+combined <- X %>%
+  left_join(y) %>%
+  gather_dummy("order", "Order") %>%
+  gather_dummy("subject", "subject_") %>%
+  mutate(
+    order_top = recode_rare(order, 7),
+    jittered_count = count + runif(n(), 0, 0.5),
+    binarized_count = ifelse(count > 0, 0, 1)
+  )
+
+## Get partial dependence, after averaging out phylogenetic features
+x_grid <- expand.grid(
+  "relative_day" = seq(-100, 50),
+  "Order" = setdiff(unique(combined$order_top), "other"),
+  "subject_" = c("AAA", "AAI")
+)
+
+f_paths <- list.files("data/sandbox/", "f_bar*", full.names = TRUE)
+f_data <- do.call(
+  rbind,
+  lapply(f_paths, read_feather)
+)
+
 p <- ggplot(combined) +
   geom_point(
-    aes(x = relative_day, y = jittered_count, col = order_top),
-    size = 0.5, alpha = 0.2,
+    aes(x = relative_day, y = jittered_count),
+    size = 0.5, alpha = 0.1,
   ) +
   geom_line(
-    aes(x = relative_day, y = jittered_count, col = order_top, group = rsv),
-    size = 0.5, alpha = 0.1
+    aes(x = relative_day, y = jittered_count, group = rsv),
+    size = 0.3, alpha = 0.1
   ) +
-  facet_grid(. ~ subject, scale = "free_x") +
-  guides(color = guide_legend(override.aes = list(alpha = 1)))
+  geom_line(
+    data = f_data,
+    aes(x = relative_day, y = f_bar, group = model),
+    size = 0.3, alpha = 1, col = "purple"
+  ) +
+  facet_grid(subject ~ order_top) +
+  guides(color = guide_legend(override.aes = list(alpha = 1))) +
+  theme(
+    panel.border = element_rect(fill = "transparent", size = 0.2)
+  )
 
 p <- p +
-  xlim(-15, 15)
+  xlim(-100, 50)
+
+p <- ggplot(combined %>%
+       group_by(subject, relative_day, order_top) %>%
+       summarise(
+         prop_nonzero = mean(binarized_count),
+         prop_lower = max(0, prop_nonzero - 1.96 * sd(binarized_count) / sqrt(n())),
+         prop_upper = min(1, prop_nonzero + 1.96 * sd(binarized_count) / sqrt(n()))
+       )
+       ) +
+  geom_point(
+    aes(x = relative_day, y = prop_nonzero),
+    alpha = 0.5
+  ) +
+  geom_line(
+    aes(x = relative_day, y = prop_nonzero),
+    alpha = 0.5
+  ) +
+  geom_errorbar(
+    aes(x = relative_day, ymax = prop_upper, ymin = prop_lower),
+    alpha = 0.2
+  ) +
+  facet_grid(subject ~ order_top) +
+  xlim(-100, 50)
 
 ###############################################################################
 # Compare predicted vs. true histograms

@@ -15,7 +15,7 @@ recode_rare <- function(x, n_keep) {
   top_levels <- names(sort(table(x), TRUE)[seq_len(n_keep)])
   y <- rep("other", length(x))
   y[x %in% top_levels] <- x[x %in% top_levels]
-  y
+  factor(y, c(top_levels, "other"))
 }
 
 #' Compute Partial dependence
@@ -40,10 +40,45 @@ partial_dependence <- function(model, x, z) {
 
   for (i in seq_len(n_new)) {
     if (i %% 10 == 0) {
-      cat(sprintf("Computing dependence for grid point %s\n", i))
+      cat(sprintf("Computing dependence for grid point %s / %s\n", i, n_new))
     }
     xz <- cbind(x[i, ], z)[varnames]
     f_bar[i] <- mean(predict(model, xz))
   }
   f_bar
+}
+
+partial_dependence_input <- function(X, x_grid) {
+  library("caret")
+  factor_cols <- colnames(x_grid)[sapply(x_grid, is.factor)]
+  numeric_cols <- setdiff(colnames(x_grid), factor_cols)
+  factor_dummies <- dummyVars("~ .", x_grid[, factor_cols, drop = FALSE]) %>%
+    predict(x_grid) %>%
+    as_data_frame()
+  x <- cbind(x_grid[, numeric_cols, drop = FALSE], factor_dummies) %>%
+    as_data_frame()
+  colnames(x) <- gsub("\\.", "", colnames(x))
+
+  z <- X %>%
+    select_(.dots = setdiff(colnames(X), colnames(x))) %>%
+    select(-Meas_ID, -rsv)
+  list("x" = x, "z" = z, "x_grid" = x_grid)
+}
+
+partial_dependence_write <- function(model_paths, input_data, output_basename) {
+  for (i in seq_along(model_paths)) {
+    cat(sprintf("Computing dependences for model %s\n", i))
+    model <- get(load(model_paths[[i]]))
+    if (!is.null(model$method)) { ## don't do this for ensemble models
+      f_bar <- partial_dependence(model, input_data$x, input_data$z)
+      feather::write_feather(
+        cbind(
+          method = model$modelInfo$label,
+          input_data$x_grid,
+          f_bar
+        ),
+        sprintf("%s_%s.feather", output_basename, i)
+      )
+    }
+  }
 }
