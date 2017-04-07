@@ -41,31 +41,17 @@ combined <- X %>%
   )
 
 ## Get partial dependence, after averaging out phylogenetic features
-x_pre <- expand.grid(
+x_grid <- expand.grid(
   "relative_day" = seq(-100, 50),
   "Order" = setdiff(unique(combined$order_top), "other"),
   "subject_" = c("AAA", "AAI")
 )
-x <- model.matrix(relative_day ~ -1 + subject_ + Order, x_pre)
-x <- cbind("relative_day" = x_pre$relative_day, x) %>%
-  as_data_frame()
 
-z <- X %>%
-  select_(.dots = setdiff(colnames(X), colnames(x))) %>%
-  select(-Meas_ID)
-dir.create("data/sandbox", recursive = TRUE)
-
-for (i in seq_along(model_paths)) {
-  cat(sprintf("Computing dependences for model %s\n", i))
-  model <- get(load(model_paths[[i]]))
-  if (!is.null(model$method)) { ## don't do this for ensemble models
-    f_bar <- partial_dependence(model, x, z)
-    write_feather(
-      cbind(x_pre, f_bar),
-      sprintf("data/sandbox/f_bar_rday_model_%s.feather", i)
-    )
-  }
-}
+f_paths <- list.files("data/sandbox/", "f_bar*", full.names = TRUE)
+f_data <- do.call(
+  rbind,
+  lapply(f_paths, read_feather)
+)
 
 p <- ggplot(combined) +
   geom_point(
@@ -77,12 +63,8 @@ p <- ggplot(combined) +
     size = 0.3, alpha = 0.1
   ) +
   geom_line(
-    data = cbind(x_pre, f_bar) %>%
-      rename(
-        order_top = Order,
-        subject = subject_
-      ),
-    aes(x = relative_day, y = f_bar),
+    data = f_data,
+    aes(x = relative_day, y = f_bar, group = model),
     size = 0.3, alpha = 1, col = "purple"
   ) +
   facet_grid(subject ~ order_top) +
