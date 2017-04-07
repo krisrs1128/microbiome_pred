@@ -13,15 +13,15 @@ The success of a theory is best judged from its ability to predict
   in new contexts.
 \end{displayquote}
 
-This comment appeared in D.R. Cox's (otherwise critical) discussion of
-\cite{breiman2001statistical}, and it will serve as the point of departure in
-our effort to better understand the microbiome using machine learning models.
-The idea is that microbiome researchers are trying to get their hands on a
-theory\footnote{While I'm quoting things, here's another relevant one: ``There
-  is nothing so practical as a good theory'' -- Kurt Lewin} of the bacterial
-ecology and the associated medical consequences. For example, can the theory
-predict what happens to the abundance of Bacteroides in the short and long run,
-when a patient undergoes a colon cleanout?
+This comment appeared in D.R. Cox's discussion of \cite{breiman2001statistical},
+and it will serve as the point of departure in our effort to better understand
+the microbiome using machine learning models. The idea is that microbiome
+researchers are trying to get their hands on a theory\footnote{While I'm quoting
+  things, here's another relevant one: ``There is nothing so practical as a good
+  theory'' -- Kurt Lewin} of the bacterial ecology and the associated medical
+consequences. For example, can the theory predict what happens to the abundance
+of Bacteroides in the short and long run, when a patient undergoes a colon
+cleanout?
 
 Building prediction models for bacterial abundances has never been that
 intrinsically interesting (in the same way it is in finance or online search,
@@ -55,6 +55,25 @@ theory-building,
 \section{Case Studies}
 
 \subsection{Cleanout Perturbation Study}
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[scale=0.4]{figure/phylo_ix_motivation.pdf}
+  \caption{Abundances across the tree. Note the ``zero plus positive part'' structure, after arcsinh transforming. \label{fig:label} }
+\end{figure}
+
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[scale=0.4]{figure/xgboost_prop_preds.pdf}
+  \caption{Fitted probability of being zero vs. nonzero. Note that for oders with fewer counts (wide bars), the model predictions default to (essentially) the global mean.\label{fig:label} }
+\end{figure}
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[scale=0.5]{figure/phylo_ix_preds.pdf}
+  \caption{I had actually input the feature incorrectly in these models -- the colors are actually supposed to be clustered near one another. The doc will be updated once I rerun the models. \label{fig:label} }
+\end{figure}
 
 \bibliographystyle{unsrt}
 \bibliography{bibliography}
