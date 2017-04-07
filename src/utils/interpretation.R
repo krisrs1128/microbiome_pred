@@ -15,7 +15,7 @@ recode_rare <- function(x, n_keep) {
   top_levels <- names(sort(table(x), TRUE)[seq_len(n_keep)])
   y <- rep("other", length(x))
   y[x %in% top_levels] <- x[x %in% top_levels]
-  y
+  factor(y, c(top_levels, "other"))
 }
 
 #' Compute Partial dependence
