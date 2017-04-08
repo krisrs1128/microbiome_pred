@@ -1,5 +1,5 @@
 {
-  "method": "xgbLinear",
+  "method": "xgbTree",
   "train_control_opts": {
     "method": "repeatedcv",
     "number": 5,

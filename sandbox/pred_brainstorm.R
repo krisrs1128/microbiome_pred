@@ -21,8 +21,7 @@ scale_fill_discrete <- function(...)
 ## Not the cv-fold data
 X_path <- "data/processed/features/features_772570831040539-all.feather"
 y_path <- "data/processed/responses/responses_616901990044369-all.feather"
-model_paths <- list.files("data/processed/models/", "all.RData", full.names = TRUE)
-f_paths <- list.files("data/sandbox/", "f_bar*", full.names = TRUE)[1:6]
+f_paths <- list.files("data/sandbox/", "f_bar*", full.names = TRUE)
 ps <- readRDS("data/raw/ps.RDS")
 X <- read_feather(X_path)
 y <- read_feather(y_path)
@@ -55,9 +54,9 @@ for (i in seq_along(f_data)) {
 cols <- sapply(f_data, colnames)
 cols
 
-f_data_phylo <- do.call(rbind, f_data[1:5]) %>%
+f_data_phylo <- do.call(rbind, f_data[1:9]) %>%
   rename(subject = subject_)
-f_data_time <- do.call(rbind, f_data[6]) %>%
+f_data_time <- do.call(rbind, f_data[10:15]) %>%
   rename(subject = subject_, order_top = Order)
 
 p <- ggplot(combined) +
@@ -70,9 +69,9 @@ p <- ggplot(combined) +
     size = 0.3, alpha = 0.1
   ) +
   geom_line(
-    data = f_data_time %>% filter(ix == 6),
+    data = f_data_time %>% filter(ix %in% c(12, 13, 15)),
     aes(x = relative_day, y = f_bar, group = ix, col = method),
-    size = 0.3, alpha = 1
+    size = 0.7, alpha = 1
   ) +
   facet_grid(subject ~ order_top) +
   guides(color = guide_legend(override.aes = list(alpha = 1))) +
@@ -105,7 +104,7 @@ p <- ggplot(combined %>%
     alpha = 0.2
   ) +
   geom_line(
-    data = f_data_time %>% filter(ix == 6),
+    data = f_data_time %>% filter(ix %in% c(10, 14)),
     aes(x = relative_day, y = 1 - f_bar, group = ix, linetype = method),
     size = 0.3, alpha = 1,
     col = "#F69259"
@@ -120,6 +119,10 @@ ggplot(combined) +
   geom_histogram(aes(x = jittered_count, fill = order_top)) +
   facet_grid(order_top ~ subject, scale = "free_y") +
   theme(strip.text.y = element_blank())
+ggplot(f_data_time %>% filter(ix %in% c(11, 12, 13, 15))) +
+  geom_bar(aes(x = relative_day, y = f_bar, fill = order_top),
+           stat = "identity", position = "dodge") +
+  facet_grid(subject ~ ix)
 
 ###############################################################################
 # Study predictions along tree
@@ -165,7 +168,19 @@ ggplot() +
     aes(x = phylo_ix, ymin = prop_lower, ymax = prop_upper, col = order_top)
   ) +
   geom_line(
-    data = f_data_phylo %>% filter(ix %in% c(1, 2, 4)),
+    data = f_data_phylo %>% filter(ix %in% c(1, 2)),
     aes(x = phylo_ix, y = 1 - f_bar, group = ix, linetype = method)
+  ) +
+  facet_grid(subject ~ .)
+
+ggplot() +
+  geom_point(
+    data = combined,
+    aes(x = phylo_ix, y = count, col = order_top),
+    size = 0.5, alpha = 0.2
+  ) +
+  geom_line(
+    data = f_data_phylo %>% filter(ix %in% c(4)),
+    aes(x = phylo_ix, y = f_bar, group = ix, linetype = method)
   ) +
   facet_grid(subject ~ .)
