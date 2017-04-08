@@ -47,7 +47,7 @@ if (dependence_type == "time") {
     get(load(model_path)),
     input_data,
     sprintf(
-      "data/sandbox/f_bar_rday_model_%s",
+      "data/sandbox/f_bar_rday_%s",
       basename(tools::file_path_sans_ext(model_path))
     )
   )
