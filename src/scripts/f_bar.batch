@@ -40,4 +40,4 @@ ml python/3.3.2
 ml unload intel/2015
 
 cd /scratch/users/kriss1/programming/research/microbiome_pred/
-Rscript sandbox/write_partial_dependence.R
+Rscript sandbox/write_partial_dependence.R ${1} ${2}
