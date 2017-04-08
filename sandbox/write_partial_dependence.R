@@ -46,7 +46,10 @@ if (dependence_type == "time") {
   partial_dependence_write(
     get(load(model_path)),
     input_data,
-    "data/sandbox/f_bar_rday_model_"
+    sprintf(
+      "data/sandbox/f_bar_rday_model_%s",
+      basename(tools::file_path_sans_ext(model_path))
+    )
   )
 } else {
   ## Get partial dependence, after averaging out phylogenetic features
