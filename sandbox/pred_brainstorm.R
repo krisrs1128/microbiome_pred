@@ -21,7 +21,6 @@ scale_fill_discrete <- function(...)
 ## Not the cv-fold data
 X_path <- "data/processed/features/features_772570831040539-all.feather"
 y_path <- "data/processed/responses/responses_616901990044369-all.feather"
-model_paths <- list.files("data/processed/models/", "all.RData", full.names = TRUE)
 f_paths <- list.files("data/sandbox/", "f_bar*", full.names = TRUE)[1:6]
 ps <- readRDS("data/raw/ps.RDS")
 X <- read_feather(X_path)
