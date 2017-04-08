@@ -48,7 +48,7 @@ if (dependence_type == "time") {
     input_data,
     "data/sandbox/f_bar_rday_model_"
   )
-} else (if dependence_type == "phylo") {
+} else {
   ## Get partial dependence, after averaging out phylogenetic features
   x_grid <- expand.grid(
     "phylo_ix" = seq(min(X$phylo_ix), max(X$phylo_ix), length.out = 100),
