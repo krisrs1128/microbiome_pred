@@ -47,35 +47,50 @@ x_grid <- expand.grid(
   "subject_" = c("AAA", "AAI")
 )
 
-f_data <- lapply(f_paths, read_feather)
-for (i in seq_along(f_data)) {
-  f_data[[i]]$ix <- i
-}
-cols <- sapply(f_data, colnames)
-cols
+f_list <- lapply(f_paths, read_feather)
+for (i in seq_along(f_list)) {
+  f_list[[i]]$ix <- i
+  f_list[[i]] <- f_list[[i]] %>%
+    rename(subject = subject_)
 
-f_data_phylo <- do.call(rbind, f_data[1:9]) %>%
-  rename(subject = subject_)
-f_data_time <- do.call(rbind, f_data[10:15]) %>%
-  rename(subject = subject_, order_top = Order)
+  if ("Order" %in% colnames(f_list[[i]])) {
+    f_list[[i]] <- f_list[[i]] %>%
+      rename(order = Order) %>%
+      mutate(order_top = recode_rare(order, 7))
+  }
+
+  if (grepl("phylo_ix", f_paths[[i]])) {
+    f_list[[i]]$type <- "phylo_ix"
+  } else if (grepl("order", f_paths[[i]])) {
+    f_list[[i]]$type <- "order"
+  } else if (grepl("rday", f_paths[[i]])) {
+    f_list[[i]]$type <- "rday"
+  }
+}
+
+types <- sapply(f_list, function(x) x$type[1])
+unique_types <- unique(types)
+f_data <- list()
+for (i in seq_along(unique_types)) {
+  f_data[[unique_types[[i]]]] <- do.call(rbind, f_list[types == unique_types[i]])
+}
 
 p <- ggplot(combined) +
   geom_point(
-    aes(x = relative_day, y = jittered_count),
+    aes(x = relative_day, y = jittered_count, col = order_top),
     size = 0.5, alpha = 0.1,
   ) +
   geom_line(
-    aes(x = relative_day, y = jittered_count, group = rsv),
+    aes(x = relative_day, y = jittered_count, group = rsv, col = order_top),
     size = 0.3, alpha = 0.1
   ) +
   geom_line(
-    data = f_data_time %>% filter(ix %in% c(12, 13, 15)),
-    aes(x = relative_day, y = f_bar, group = ix, col = method),
+    data = f_data[["rday"]] %>% filter(ix %in% c(12, 13, 15)),
+    aes(x = relative_day, y = f_bar, group = ix, linetype = method),
     size = 0.7, alpha = 1
   ) +
   facet_grid(subject ~ order_top) +
   guides(color = guide_legend(override.aes = list(alpha = 1))) +
-  scale_color_brewer(palette = "Set1") +
   theme(
     panel.border = element_rect(fill = "transparent", size = 0.2)
   )
@@ -92,22 +107,25 @@ p <- ggplot(combined %>%
        )
        ) +
   geom_point(
-    aes(x = relative_day, y = prop_nonzero),
-    alpha = 0.5
+    aes(x = relative_day, y = prop_nonzero, col = order_top),
+    alpha = 0.6
   ) +
   geom_line(
-    aes(x = relative_day, y = prop_nonzero),
-    alpha = 0.5
-  ) +
-  geom_errorbar(
-    aes(x = relative_day, ymax = prop_upper, ymin = prop_lower),
-    alpha = 0.2
+    aes(x = relative_day, y = prop_nonzero, col = order_top),
+    alpha = 0.6
   ) +
   geom_line(
-    data = f_data_time %>% filter(ix %in% c(10, 14)),
+    aes(x = relative_day, y = prop_upper, col = order_top),
+    alpha = 0.4, linetype = 2
+  ) +
+  geom_line(
+    aes(x = relative_day, y = prop_lower, col = order_top),
+    alpha = 0.4, linetype = 2
+  ) +
+  geom_line(
+    data = f_data[["rday"]] %>% filter(ix %in% c(11, 15)),
     aes(x = relative_day, y = 1 - f_bar, group = ix, linetype = method),
-    size = 0.3, alpha = 1,
-    col = "#F69259"
+    size = 0.3, alpha = 1
   ) +
   facet_grid(subject ~ order_top) +
   xlim(-100, 50)
