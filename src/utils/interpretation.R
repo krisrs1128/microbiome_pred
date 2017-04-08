@@ -65,20 +65,16 @@ partial_dependence_input <- function(X, x_grid) {
   list("x" = x, "z" = z, "x_grid" = x_grid)
 }
 
-partial_dependence_write <- function(model_paths, input_data, output_basename) {
-  for (i in seq_along(model_paths)) {
-    cat(sprintf("Computing dependences for model %s\n", i))
-    model <- get(load(model_paths[[i]]))
-    f_bar <- try(partial_dependence(model, input_data$x, input_data$z))
-    if (class(f_bar) != "try-error") {
-      feather::write_feather(
-                 cbind(
-                   method = model$modelInfo$label,
-                   input_data$x_grid,
-                   f_bar
-                 ),
-                 sprintf("%s_%s.feather", output_basename, i)
-               )
-    }
+partial_dependence_write <- function(model, input_data, output_basename) {
+  f_bar <- try(partial_dependence(model, input_data$x, input_data$z))
+  if (class(f_bar) != "try-error") {
+    feather::write_feather(
+               cbind(
+                 method = model$modelInfo$label,
+                 input_data$x_grid,
+                 f_bar
+               ),
+               sprintf("%s.feather", output_basename)
+             )
   }
 }
