@@ -9,8 +9,6 @@ dependence_type <- args[[2]]
 
 library("feather")
 library("dplyr")
-library("tidyr")
-library("SLURMHelpers")
 source("src/utils/interpretation.R")
 
 ## create directory, read existing (full) data and models
@@ -37,34 +35,36 @@ combined <- X %>%
 if (dependence_type == "time") {
   ## Get partial dependence, after averaging out phylogenetic features
   x_grid <- expand.grid(
-    "relative_day" = seq(-100, 50, length.out = 100),
+    "relative_day" = seq(-100, 50, length.out = 150),
     "Order" = setdiff(unique(combined$order_top), "other"),
     "subject_" = c("AAA", "AAI")
   )
+  output_base <- "data/sandbox/f_bar_rday_%s"
 
-  input_data <- partial_dependence_input(X, x_grid)
-  partial_dependence_write(
-    get(load(model_path)),
-    input_data,
-    sprintf(
-      "data/sandbox/f_bar_rday_%s",
-      basename(tools::file_path_sans_ext(model_path))
-    )
-  )
-} else {
+} else if (dependence_type == "phylo_ix") {
   ## Get partial dependence, after averaging out phylogenetic features
   x_grid <- expand.grid(
-    "phylo_ix" = seq(min(X$phylo_ix), max(X$phylo_ix), length.out = 100),
+    "phylo_ix" = seq(min(X$phylo_ix), max(X$phylo_ix), length.out = 750),
     "subject_" = c("AAA", "AAI")
   )
-
-  input_data <- partial_dependence_input(X, x_grid)
-  partial_dependence_write(
-    get(load(model_path)),
-    input_data,
-    sprintf(
-      "data/sandbox/f_bar_phylo_ix_%s",
-      basename(tools::file_path_sans_ext(model_path))
-    )
+  output_base <- "data/sandbox/f_bar_phylo_ix_%s"
+} else if (dependence_type == "order") {
+  ## Get partial dependence, after averaging everything except order and subject
+  x_grid <- expand.grid(
+    "Order" = unique(combined$order_top),
+    "subject_" = c("AAA", "AAI")
   )
+  output_base <- "data/sandbox/f_bar_order_%s"
+} else {
+  stop(sprintf("Partial dependence type %s not found", dependence_type))
 }
+
+input_data <- partial_dependence_input(X, x_grid)
+partial_dependence_write(
+  get(load(model_path)),
+  input_data,
+  sprintf(
+    output_base,
+    basename(tools::file_path_sans_ext(model_path))
+  )
+)

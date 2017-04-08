@@ -2,12 +2,13 @@
 f <- readLines("src/scripts/f_bar.batch")
 model_paths <- list.files(
   "data/processed/models/",
-  "all.RData",
+  "*.RData",
   full.names = TRUE
 )
 feature_types <- c(
-  "phylo",
-  "time"
+  "phylo_ix",
+  "time",
+  "order"
 )
 
 for (i in seq_along(model_paths)) {
