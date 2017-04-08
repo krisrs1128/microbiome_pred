@@ -15,6 +15,7 @@ output_path <- args[[3]]
 
 ## ---- libraries ----
 library("caret")
+library("plyr")
 library("dplyr")
 library("feather")
 source("src/utils/ensemble_funs.R")
