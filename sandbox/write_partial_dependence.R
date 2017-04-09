@@ -51,7 +51,7 @@ if (dependence_type == "time") {
 } else if (dependence_type == "order") {
   ## Get partial dependence, after averaging everything except order and subject
   x_grid <- expand.grid(
-    "Order" = unique(combined$order_top),
+    "Order" = unique(combined$order),
     "subject_" = c("AAA", "AAI")
   )
   output_base <- "data/sandbox/f_bar_order_%s"
