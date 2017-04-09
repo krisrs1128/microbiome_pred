@@ -308,3 +308,19 @@ cat(
   sprintf("var order_top_levels = %s", toJSON(levels(combined_thinned$order_top))),
   file = file.path(output_base, "order_top_levels.js")
 )
+
+f_combined <- list()
+for (var_type in c("phylo_ix", "order", "rday")) {
+  if (var_type != "rday") {
+    cur_f <- dlply(f_data[[var_type]], c("ix", "subject"))
+  } else {
+    cur_f <- dlply(f_data[[var_type]], c("ix", "subject", "order_top"))
+  }
+  names(cur_f) <- NULL
+  f_combined[[var_type]] <- cur_f
+}
+
+cat(
+  sprintf("var f_combined = %s", toJSON(f_combined)),
+  file = file.path(output_base, "f_combined.js")
+)
