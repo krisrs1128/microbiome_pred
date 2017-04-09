@@ -37,7 +37,7 @@ combined <- X %>%
   mutate(
     order_top = recode_rare(order, 7),
     jittered_count = count + runif(n(), -0.5, 0.5),
-    binarized = ifelse(count > 0, 0, 1),
+    binarized = ifelse(count > 0, 1, 0),
     jittered_binarized = binarized + runif(n(), -0.1, 0.1)
   )
 combined$order <- factor(combined$order, levels = names(sort(table(combined$order), dec = TRUE)))
@@ -268,3 +268,16 @@ i = 3
 f_data[[i]] %>%
   group_by(ix) %>%
   summarise(max(f_bar))
+
+###############################################################################
+## Write data for d3 version
+###############################################################################
+glimpse(combined)
+combined <- combined %>%
+  select(-starts_with("phylo_coord"), -count, -binarized)
+combined_thinned <- combined[seq(1, nrow(combined), length.out = 7000), ]
+library("jsonlite")
+cat(
+  sprintf("var combined = %s", toJSON(combined_thinned)),
+  file = "/Users/krissankaran/Desktop/lab_meetings/20170412/slides/data/combined.js"
+)
