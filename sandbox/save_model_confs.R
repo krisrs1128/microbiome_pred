@@ -1,4 +1,6 @@
 
+source("src/utils/models.R")
+library("caret")
 m <- conditional_positive_model(getModelInfo("rf", regex <- FALSE)[[1]])
 save(m, file = "conf/rf_pos.RData")
 m <- conditional_positive_model(getModelInfo("glmnet", regex <- FALSE)[[1]])
