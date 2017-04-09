@@ -5,11 +5,13 @@
 ## tried.
 
 library("feather")
+library("plyr")
 library("dplyr")
 library("tidyr")
 library("ggplot2")
 library("ggtree")
 library("phyloseq")
+library("jsonlite")
 source("src/utils/interpretation.R")
 theme_set(ggscaffold::min_theme())
 
@@ -37,7 +39,7 @@ combined <- X %>%
   mutate(
     order_top = recode_rare(order, 7),
     jittered_count = count + runif(n(), -0.5, 0.5),
-    binarized = ifelse(count > 0, 0, 1),
+    binarized = ifelse(count > 0, 1, 0),
     jittered_binarized = binarized + runif(n(), -0.1, 0.1)
   )
 combined$order <- factor(combined$order, levels = names(sort(table(combined$order), dec = TRUE)))
@@ -268,3 +270,57 @@ i = 3
 f_data[[i]] %>%
   group_by(ix) %>%
   summarise(max(f_bar))
+
+###############################################################################
+## Write data for d3 version
+###############################################################################
+glimpse(combined)
+keep_rsvs <- sample(unique(combined$rsv), 120)
+combined_thinned <- combined %>%
+  select(-starts_with("phylo_coord"), -count, -binarized) %>%
+  filter(
+    relative_day > -100,
+    relative_day < 50,
+    rsv %in% keep_rsvs
+  ) %>%
+  arrange(rsv, relative_day)
+combined_thinned$order <- droplevels(combined_thinned$order)
+
+output_base <- "/Users/krissankaran/Desktop/lab_meetings/20170412/slides/data/"
+cat(
+  sprintf("var combined = %s", toJSON(combined_thinned)),
+  file = file.path(output_base, "combined.js")
+)
+
+combined_rsv <- dlply(combined_thinned, c("rsv", "subject"))
+names(combined_rsv) <- NULL
+cat(
+  sprintf("var rsv = %s", toJSON(combined_rsv, auto_unbox = TRUE)),
+  file = file.path(output_base, "rsv.js")
+)
+
+cat(
+  sprintf("var order_levels = %s", toJSON(levels(combined_thinned$order))),
+  file = file.path(output_base, "order_levels.js")
+)
+
+cat(
+  sprintf("var order_top_levels = %s", toJSON(levels(combined_thinned$order_top))),
+  file = file.path(output_base, "order_top_levels.js")
+)
+
+f_combined <- list()
+for (var_type in c("phylo_ix", "order", "rday")) {
+  if (var_type != "rday") {
+    cur_f <- dlply(f_data[[var_type]], c("ix", "subject"))
+  } else {
+    cur_f <- dlply(f_data[[var_type]], c("ix", "subject", "order_top"))
+  }
+  names(cur_f) <- NULL
+  f_combined[[var_type]] <- cur_f
+}
+
+cat(
+  sprintf("var f_combined = %s", toJSON(f_combined)),
+  file = file.path(output_base, "f_combined.js")
+)
