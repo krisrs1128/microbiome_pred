@@ -1,10 +1,12 @@
+
 {
   "taxa_features": {
+  },
+  "phylo_coords": {
+    "k": 3
   },
   "relative_day": {
   },
   "person_id": {
-  },
-  "phylo_ix": {
   }
 }
