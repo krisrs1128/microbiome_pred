@@ -79,32 +79,5 @@
     "features": "conf/all.json",
     "model": "conf/gbm.json",
     "metrics": "rmse;mae;precision_at_90;precision_at_60"
-  },
-  "exper_10": {
-    "id": 10,
-    "preprocessing": "conf/subsample_subject.json",
-    "validation_prop": 0.4,
-    "k_folds": 3,
-    "features": "conf/all.json",
-    "model": "conf/glmnet_pos.json",
-    "metrics": "rmse;mae;precision_at_90;precision_at_60"
-  },
-  "exper_11": {
-    "id": 11,
-    "preprocessing": "conf/subsample_subject.json",
-    "validation_prop": 0.4,
-    "k_folds": 3,
-    "features": "conf/all.json",
-    "model": "conf/glmnet_binarize.json",
-    "metrics": "rmse;mae;precision_at_90;precision_at_60"
-  },
-  "exper_12": {
-    "id": 12,
-    "preprocessing": "conf/subsample_subject.json",
-    "validation_prop": 0.4,
-    "k_folds": 3,
-    "features": "conf/all.json",
-    "model": "conf/glmnet.json",
-    "metrics": "rmse;mae;precision_at_90;precision_at_60"
   }
 }
