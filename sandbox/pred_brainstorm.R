@@ -44,18 +44,21 @@ combined <- X %>%
   )
 combined$order <- factor(combined$order, levels = names(sort(table(combined$order), dec = TRUE)))
 
-## Get partial dependence, after averaging out phylogenetic features
-x_grid <- expand.grid(
-  "relative_day" = seq(-100, 50),
-  "Order" = setdiff(unique(combined$order_top), "other"),
-  "subject_" = c("AAA", "AAI")
-)
-
 f_list <- lapply(f_paths, read_feather)
 for (i in seq_along(f_list)) {
   f_list[[i]]$ix <- i
   f_list[[i]] <- f_list[[i]] %>%
     rename(subject = subject_)
+
+  if (grepl("_", f_list[[i]]$method[1])) {
+    f_list[[i]]$method <- gsub("conditional_pos", "conditional", f_list[[i]]$method)
+    f_list[[i]] <- f_list[[i]] %>%
+      separate(method, c("model_type", "algorithm"), sep = "_")
+  } else {
+    f_list[[i]] <- f_list[[i]] %>%
+      mutate(model_type = "full") %>%
+      rename(algorithm = method)
+  }
 
   if ("Order" %in% colnames(f_list[[i]])) {
     f_list[[i]] <- f_list[[i]] %>%
@@ -79,6 +82,66 @@ for (i in seq_along(unique_types)) {
   f_data[[unique_types[[i]]]] <- do.call(rbind, f_list[types == unique_types[i]])
 }
 
+
+###############################################################################
+## Write data for d3 version
+###############################################################################
+glimpse(combined)
+keep_rsvs <- sample(unique(combined$rsv), 50)
+combined_thinned <- combined %>%
+  select(-starts_with("phylo_coord"), -count, -binarized) %>%
+  filter(
+    relative_day > -100,
+    relative_day < 50,
+    rsv %in% keep_rsvs
+  ) %>%
+  arrange(rsv, relative_day)
+combined_thinned$order <- droplevels(combined_thinned$order)
+combined_thinned$order_top <- droplevels(combined_thinned$order_top)
+
+output_base <- "/Users/krissankaran/Desktop/lab_meetings/20170412/slides/data/"
+cat(
+  sprintf("var combined = %s", toJSON(combined_thinned)),
+  file = file.path(output_base, "combined.js")
+)
+
+combined_rsv <- dlply(combined_thinned, c("rsv", "subject"))
+names(combined_rsv) <- NULL
+cat(
+  sprintf("var rsv = %s", toJSON(combined_rsv, auto_unbox = TRUE)),
+  file = file.path(output_base, "rsv.js")
+)
+
+cat(
+  sprintf("var order_levels = %s", toJSON(levels(combined_thinned$order))),
+  file = file.path(output_base, "order_levels.js")
+)
+
+cat(
+  sprintf("var order_top_levels = %s", toJSON(levels(combined_thinned$order_top))),
+  file = file.path(output_base, "order_top_levels.js")
+)
+
+f_combined <- list()
+for (var_type in c("phylo_ix", "order", "rday")) {
+  if ("order" %in% colnames(f_data[[var_type]])) {
+    f_data[[var_type]] <- f_data[[var_type]] %>%
+      filter(order %in% levels(combined_thinned$order))
+  }
+  if (var_type != "rday") {
+    cur_f <- dlply(f_data[[var_type]], c("ix", "subject"))
+  } else {
+    cur_f <- dlply(f_data[[var_type]], c("ix", "subject", "order_top"))
+  }
+  names(cur_f) <- NULL
+  f_combined[[var_type]] <- cur_f
+}
+
+cat(
+  sprintf("var f_combined = %s", toJSON(f_combined)),
+  file = file.path(output_base, "f_combined.js")
+)
+
 ###############################################################################
 ## Overall order effect
 ###############################################################################
@@ -88,9 +151,9 @@ ggplot(combined) +
     size = 0.3, alpha = 0.2, position = position_jitter(w = 0.1)
   ) +
   geom_point(
-    data = f_data[["order"]],
+    data = f_data[["order"]] %>% filter(model_type == "conditional"),
     aes(x = order, y = f_bar, group = ix),
-    size = 1.2
+    size = 1.2, alpha = 0.6
   ) +
   facet_grid(subject ~ .)
 
@@ -115,8 +178,8 @@ ggplot(
     aes(x = order, ymin = prop_lower, ymax = prop_upper, col = order_top)
   ) +
   geom_point(
-    data = f_data[["order"]],
-    aes(x = order, y = 1 - f_bar)
+    data = f_data[["order"]] %>% filter(model_type == "binarize"),
+    aes(x = order, y = f_bar)
   ) +
   facet_grid(subject ~ .) +
   theme(
@@ -137,9 +200,9 @@ ggplot(combined) +
     size = 0.3, alpha = 0.1
   ) +
   geom_line(
-    data = f_data[["rday"]] %>% filter(ix %in% c(12, 13, 15)),
-    aes(x = relative_day, y = f_bar, group = ix, linetype = method),
-    size = 0.7, alpha = 1
+    data = f_data[["rday"]] %>% filter(model_type == "conditional"),
+    aes(x = relative_day, y = f_bar, group = ix, linetype = algorithm),
+    size = 0.7, alpha = 0.6
   ) +
   facet_grid(subject ~ order_top) +
   guides(color = guide_legend(override.aes = list(alpha = 1))) +
@@ -171,8 +234,8 @@ ggplot(
     alpha = 0.5
   ) +
   geom_line(
-    data = f_data[["rday"]] %>% filter(ix %in% c(11, 15)),
-    aes(x = relative_day, y = 1 - f_bar, group = ix, linetype = method),
+    data = f_data[["rday"]] %>% filter(model_type == "binarize"),
+    aes(x = relative_day, y = f_bar, group = ix, linetype = algorithm),
     size = 0.7
   ) +
   facet_grid(subject ~ order_top) +
@@ -242,8 +305,8 @@ ggplot(combined %>%
     size = 0.3, alpha = 0.1
   ) +
   geom_line(
-    data = f_data[["phylo_ix"]] %>% filter(ix %in% c(2, 3)),
-    aes(x = phylo_ix, y = 1 - f_bar, group = ix, linetype = method)
+    data = f_data[["phylo_ix"]] %>% filter(model_type == "binarize"),
+    aes(x = phylo_ix, y = f_bar, group = ix, linetype = algorithm)
   ) +
   facet_grid(subject ~ .) +
   theme(
@@ -258,69 +321,10 @@ ggplot() +
   ) +
   guides(color = guide_legend(override.aes = list(alpha = 1))) +
   geom_line(
-    data = f_data[["phylo_ix"]] %>% filter(ix %in% c(4, 5, 6, 7, 8, 9, 10)),
-    aes(x = phylo_ix, y = f_bar, group = ix, linetype = method)
+    data = f_data[["phylo_ix"]] %>% filter(model_type == "conditional"),
+    aes(x = phylo_ix, y = f_bar, group = ix, linetype = algorithm)
   ) +
   facet_grid(subject ~ .) +
   theme(
     panel.border = element_rect(fill = "transparent", size = 0.2)
   )
-
-i = 3
-f_data[[i]] %>%
-  group_by(ix) %>%
-  summarise(max(f_bar))
-
-###############################################################################
-## Write data for d3 version
-###############################################################################
-glimpse(combined)
-keep_rsvs <- sample(unique(combined$rsv), 120)
-combined_thinned <- combined %>%
-  select(-starts_with("phylo_coord"), -count, -binarized) %>%
-  filter(
-    relative_day > -100,
-    relative_day < 50,
-    rsv %in% keep_rsvs
-  ) %>%
-  arrange(rsv, relative_day)
-combined_thinned$order <- droplevels(combined_thinned$order)
-
-output_base <- "/Users/krissankaran/Desktop/lab_meetings/20170412/slides/data/"
-cat(
-  sprintf("var combined = %s", toJSON(combined_thinned)),
-  file = file.path(output_base, "combined.js")
-)
-
-combined_rsv <- dlply(combined_thinned, c("rsv", "subject"))
-names(combined_rsv) <- NULL
-cat(
-  sprintf("var rsv = %s", toJSON(combined_rsv, auto_unbox = TRUE)),
-  file = file.path(output_base, "rsv.js")
-)
-
-cat(
-  sprintf("var order_levels = %s", toJSON(levels(combined_thinned$order))),
-  file = file.path(output_base, "order_levels.js")
-)
-
-cat(
-  sprintf("var order_top_levels = %s", toJSON(levels(combined_thinned$order_top))),
-  file = file.path(output_base, "order_top_levels.js")
-)
-
-f_combined <- list()
-for (var_type in c("phylo_ix", "order", "rday")) {
-  if (var_type != "rday") {
-    cur_f <- dlply(f_data[[var_type]], c("ix", "subject"))
-  } else {
-    cur_f <- dlply(f_data[[var_type]], c("ix", "subject", "order_top"))
-  }
-  names(cur_f) <- NULL
-  f_combined[[var_type]] <- cur_f
-}
-
-cat(
-  sprintf("var f_combined = %s", toJSON(f_combined)),
-  file = file.path(output_base, "f_combined.js")
-)

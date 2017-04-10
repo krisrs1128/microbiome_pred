@@ -53,14 +53,14 @@ class Train(luigi.Task):
             specifiers_list[:4],
             "features_",
             "features"
-        ) + "-train-" + str(self.cur_fold)  + ".feather"
+        ) + "-train-" + str(self.cur_fold) + ".feather"
 
         y_path = pf.output_name(
             self.conf,
             specifiers_list[:3],
             "responses_",
             "responses"
-        ) + "-train-" + str(self.cur_fold)  + ".feather"
+        ) + "-train-" + str(self.cur_fold) + ".feather"
 
         if str(self.cur_fold) == "all":
             x_path = x_path.replace("-train", "")
