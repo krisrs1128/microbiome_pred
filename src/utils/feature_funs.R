@@ -124,7 +124,7 @@ pca_features <- function(melted_counts, ps, k = 3) {
   x_mat <- x %>%
     select(-rsv) %>%
     as.matrix()
-  x_mat[is.na(x_mat)] <- mean(x_mat)
+  x_mat[is.na(x_mat)] <- mean(x_mat, na.rm = TRUE)
 
   ## Create a PCA approximation
   pca_x <- princomp(x_mat)
