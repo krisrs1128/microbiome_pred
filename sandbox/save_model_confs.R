@@ -1,7 +1,7 @@
 
 source("src/utils/models.R")
 library("caret")
-model_base <- c("rf", "gbm", "rpart")
+model_base <- c("rf", "xgbTree", "rpart")
 
 for (i in seq_along(model_base)) {
   m0 <- getModelInfo(model_base[i], regex = FALSE)[[1]]

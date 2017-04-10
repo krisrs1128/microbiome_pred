@@ -1,5 +1,5 @@
 {
-  "method": "conf/gbm_pos.RData",
+  "method": "conf/xgbTree_binarize.RData",
   "train_control_opts": {
     "method": "repeatedcv",
     "number": 5,
