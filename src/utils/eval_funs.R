@@ -18,7 +18,7 @@ accuracy <- function(y, y_hat) {
 
 precision_at_k <- function(k) {
   function(y, y_hat) {
-    sum(y > 0 && y_hat > k / 100) / sum(y > 0)
+    sum(y > 0 & y_hat > (k / 100)) / sum(y_hat > 0)
   }
 }
 
@@ -32,3 +32,4 @@ precision_at_65 <- precision_at_k(65)
 precision_at_60 <- precision_at_k(60)
 precision_at_55 <- precision_at_k(55)
 precision_at_50 <- precision_at_k(50)
+precision_at_45 <- precision_at_k(45)
