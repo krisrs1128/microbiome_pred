@@ -43,6 +43,12 @@ class GetResponse(luigi.Task):
             self.k_folds
         ]
 
+        output_path = pf.output_name(
+            self.conf,
+            specifiers_list,
+            "responses_",
+            "responses"
+        )
         return_code = subprocess.call(
             [
                 "Rscript",
@@ -50,12 +56,7 @@ class GetResponse(luigi.Task):
                 self.input()[0].open("r").name,
                 self.input()[1].open("r").name,
                 self.ps_path,
-                pf.output_name(
-                    self.conf,
-                    specifiers_list,
-                    "responses_",
-                    "responses"
-                )
+                output_path
             ]
         )
 
@@ -69,7 +70,7 @@ class GetResponse(luigi.Task):
 
         with open(mapping, "a") as f:
             f.write(
-                ",".join(specifiers_list + [os.path.basename(result_path)]) + "\n"
+                ",".join(specifiers_list + [os.path.basename(output_path)]) + "\n"
             )
         f.close()
 
