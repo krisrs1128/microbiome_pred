@@ -120,6 +120,9 @@ taxa_features <- function(melted_counts, ps, levels = "Order") {
 pca_features <- function(melted_counts, ps, k = 3) {
   ## Reshape data so we can take pca
   x <- melted_counts %>%
+    group_by(rsv, Meas_ID) %>%
+    summarise(count = mean(count, na.rm = TRUE)) %>% ## average over folds
+    ungroup() %>%
     spread(Meas_ID, count)
   x_mat <- x %>%
     select(-rsv) %>%
@@ -133,9 +136,12 @@ pca_features <- function(melted_counts, ps, k = 3) {
   x_coarse <- pca_x$scores %*% diag(evals) %*% t(pca_x$loadings)
 
   ## Melt back into features format
-  cbind(
+  pca_imputed <- cbind(
     "rsv" = x$rsv,
     as_data_frame(x_coarse)
   ) %>%
-    gather("Meas_ID", "count", -rsv)
+    gather("Meas_ID", "pca_imputed", -rsv)
+
+  melted_counts %>%
+    left_join(pca_imputed)
 }
