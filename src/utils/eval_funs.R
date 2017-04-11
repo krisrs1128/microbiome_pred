@@ -11,6 +11,13 @@ mae <- function(y, y_hat) {
   mean(abs(y - y_hat))
 }
 
+conditional_eval <- function(f) {
+  function(y, y_hat) {
+    pos_ix <- y[y > 0]
+    f(y[pos_ix], y_hat[pos_ix])
+  }
+}
+
 accuracy <- function(y, y_hat) {
   comp <- table(y > 0, y_hat > 0.5) # need to binarize y first
   sum(diag(comp)) / sum(comp)
@@ -22,6 +29,8 @@ precision_at_k <- function(k) {
   }
 }
 
+conditional_rmse <- conditional_eval(rmse)
+conditional_mae <- conditional_eval(mae)
 precision_at_95 <- precision_at_k(95)
 precision_at_90 <- precision_at_k(90)
 precision_at_85 <- precision_at_k(85)
