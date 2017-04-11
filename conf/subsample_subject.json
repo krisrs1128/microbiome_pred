@@ -1,17 +1,19 @@
 {
-    "asinh_transform": {
-    },
-    "filter_low_reads": {
-    },
-    "filter_qcs": {
-    },
-    "variance_filter": {
-        "top_k": 300
-    },
-    "person_subsample": {
-        "ids": [
-            "AAA",
-            "AAI"
-        ]
-    }
+  "asinh_transform": {
+  },
+  "filter_low_reads": {
+  },
+  "filter_qcs": {
+  },
+  "variance_filter": {
+    "top_k": 300
+  },
+  "person_subsample": {
+    "ids": [
+      "AAD",
+      "AAF",
+      "AAN",
+      "AAI"
+    ]
+  }
 }
