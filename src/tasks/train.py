@@ -87,6 +87,23 @@ class Train(luigi.Task):
         if return_code != 0:
             raise ValueError("train.R failed")
 
+        project_dir = self.conf.get("paths", "project_dir")
+        x_mapping = pf.processed_data_dir(project_dir, "x_mapping.txt")
+        with open(x_mapping, "a") as fx:
+            fx.write(",".join(specifiers_list[:4] + [self.cur_fold, x_path]) + "\n")
+
+        y_mapping = pf.processed_data_dir(project_dir, "y_mapping.txt")
+        with open(y_mapping, "a") as fy:
+            fy.write(",".join(specifiers_list[:3] + [self.cur_fold, y_path]) + "\n")
+
+        m_mapping = pf.processed_data_dir(project_dir, "m_mapping.txt")
+        with open(m_mapping, "a") as fm:
+            fm.write(",".join(specifiers_list + [self.cur_fold, result_path]) + "\n")
+
+        fm.close()
+        fx.close()
+        fy.close()
+
     def output(self):
         specifiers_list = [
             self.preprocess_conf,
