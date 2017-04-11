@@ -26,10 +26,12 @@ person_subsample <- function(ps, ids = NULL) {
   if (is.null(ids)) {
     ids <- unique(sample_data(ps)$Subject)
   }
-  prune_samples(
+  new_ps <- prune_samples(
     sample_data(ps)$Subject %in% ids,
     ps
   )
+  sample_data(new_ps)$Subject <- droplevels(sample_data(new_ps)$Subject)
+  new_ps
 }
 
 filter_qcs <- function(ps) {
