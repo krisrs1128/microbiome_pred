@@ -142,6 +142,8 @@ pca_features <- function(melted_counts, ps, k = 3) {
   ) %>%
     gather("Meas_ID", "pca_imputed", -rsv)
 
-  melted_counts %>%
+  result <- melted_counts %>%
     left_join(pca_imputed)
+  result$pca_imputed[is.na(result$pca_imputed)] <- mean(result$pca_imputed, na.rm = TRUE)
+  result
 }
