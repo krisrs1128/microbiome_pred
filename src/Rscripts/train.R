@@ -49,7 +49,7 @@ y <- y %>%
   unlist() %>%
   as.numeric()
 
-cl <- makeCluster(min(4, detectCores()))
+cl <- makeCluster(min(2, detectCores()))
 registerDoParallel(cl)
 model_res <- do.call(train, c(list("x" = x, "y" = y), model_opts))
 
