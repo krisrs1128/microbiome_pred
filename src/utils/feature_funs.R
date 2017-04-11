@@ -59,7 +59,7 @@ imm_post <- function(melted_counts, ps) {
   samples <- sample_data(ps)
   samples$CC_RelDay <- na.locf(samples$CC_RelDay)
   samples$imm_post <- ifelse(
-    samples$CC_RelDay >= & samples$CC_RelDay <= 3,
+    samples$CC_RelDay >= 0 & samples$CC_RelDay <= 3,
     1,
     0
   )
