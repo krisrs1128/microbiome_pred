@@ -4,6 +4,5 @@
     "method": "repeatedcv",
     "number": 5,
     "repeats": 1
-  },
-  "importance": true
+  }
 }

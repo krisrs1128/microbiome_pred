@@ -6,7 +6,7 @@
     "k_folds": 3,
     "features": "conf/all.json",
     "model": "conf/rpart_pos.json",
-    "metrics": "rmse;mae;precision_at_90;precision_at_60"
+    "metrics": "rmse;mae;conditional_rmse;conditional_mae;precision_at_90;precision_at_60"
   },
   "exper_2": {
     "id": 2,
@@ -15,7 +15,7 @@
     "k_folds": 3,
     "features": "conf/all.json",
     "model": "conf/rpart_binarize.json",
-    "metrics": "rmse;mae;precision_at_90;precision_at_60"
+    "metrics": "rmse;mae;conditional_rmse;conditional_mae;precision_at_90;precision_at_60"
   },
   "exper_3": {
     "id": 3,
@@ -24,7 +24,7 @@
     "k_folds": 3,
     "features": "conf/all.json",
     "model": "conf/rpart.json",
-    "metrics": "rmse;mae;precision_at_90;precision_at_60"
+    "metrics": "rmse;mae;conditional_rmse;conditional_mae;precision_at_90;precision_at_60"
   },
   "exper_4": {
     "id": 4,
@@ -33,7 +33,7 @@
     "k_folds": 3,
     "features": "conf/all.json",
     "model": "conf/rf_pos.json",
-    "metrics": "rmse;mae;precision_at_90;precision_at_60"
+    "metrics": "rmse;mae;conditional_rmse;conditional_mae;precision_at_90;precision_at_60"
   },
   "exper_5": {
     "id": 5,
@@ -42,7 +42,7 @@
     "k_folds": 3,
     "features": "conf/all.json",
     "model": "conf/rf_binarize.json",
-    "metrics": "rmse;mae;precision_at_90;precision_at_60"
+    "metrics": "rmse;mae;conditional_rmse;conditional_mae;precision_at_90;precision_at_60"
   },
   "exper_6": {
     "id": 6,
@@ -51,7 +51,7 @@
     "k_folds": 3,
     "features": "conf/all.json",
     "model": "conf/rf.json",
-    "metrics": "rmse;mae;precision_at_90;precision_at_60"
+    "metrics": "rmse;mae;conditional_rmse;conditional_mae;precision_at_90;precision_at_60"
   },
   "exper_7": {
     "id": 7,
@@ -60,7 +60,7 @@
     "k_folds": 3,
     "features": "conf/all.json",
     "model": "conf/xgbTree_pos.json",
-    "metrics": "rmse;mae;precision_at_90;precision_at_60"
+    "metrics": "rmse;mae;conditional_rmse;conditional_mae;precision_at_90;precision_at_60"
   },
   "exper_8": {
     "id": 8,
@@ -69,7 +69,7 @@
     "k_folds": 3,
     "features": "conf/all.json",
     "model": "conf/xgbTree_binarize.json",
-    "metrics": "rmse;mae;precision_at_90;precision_at_60"
+    "metrics": "rmse;mae;conditional_rmse;conditional_mae;precision_at_90;precision_at_60"
   },
   "exper_9": {
     "id": 9,
@@ -78,7 +78,7 @@
     "k_folds": 3,
     "features": "conf/all.json",
     "model": "conf/xgbTree.json",
-    "metrics": "rmse;mae;precision_at_90;precision_at_60"
+    "metrics": "rmse;mae;conditional_rmse;conditional_mae;precision_at_90;precision_at_60"
   },
   "exper_10": {
     "id": 10,
@@ -87,7 +87,7 @@
     "k_folds": 3,
     "features": "conf/pca.json",
     "model": "conf/rf_pos.json",
-    "metrics": "rmse;mae;precision_at_90;precision_at_60"
+    "metrics": "rmse;mae;conditional_rmse;conditional_mae;precision_at_90;precision_at_60"
   },
   "exper_11": {
     "id": 11,
@@ -96,7 +96,7 @@
     "k_folds": 3,
     "features": "conf/pca.json",
     "model": "conf/rf_binarize.json",
-    "metrics": "rmse;mae;precision_at_90;precision_at_60"
+    "metrics": "rmse;mae;conditional_rmse;conditional_mae;precision_at_90;precision_at_60"
   },
   "exper_12": {
     "id": 12,
@@ -105,7 +105,7 @@
     "k_folds": 3,
     "features": "conf/pca.json",
     "model": "conf/rf.json",
-    "metrics": "rmse;mae;precision_at_90;precision_at_60"
+    "metrics": "rmse;mae;conditional_rmse;conditional_mae;precision_at_90;precision_at_60"
   },
   "exper_13": {
     "id": 13,
@@ -114,7 +114,7 @@
     "k_folds": 3,
     "features": "conf/phylo_coords.json",
     "model": "conf/rf_pos.json",
-    "metrics": "rmse;mae;precision_at_90;precision_at_60"
+    "metrics": "rmse;mae;conditional_rmse;conditional_mae;precision_at_90;precision_at_60"
   },
   "exper_14": {
     "id": 14,
@@ -123,7 +123,7 @@
     "k_folds": 3,
     "features": "conf/phylo_coords.json",
     "model": "conf/rf_binarize.json",
-    "metrics": "rmse;mae;precision_at_90;precision_at_60"
+    "metrics": "rmse;mae;conditional_rmse;conditional_mae;precision_at_90;precision_at_60"
   },
   "exper_15": {
     "id": 15,
@@ -132,6 +132,6 @@
     "k_folds": 3,
     "features": "conf/phylo_coords.json",
     "model": "conf/rf.json",
-    "metrics": "rmse;mae;precision_at_90;precision_at_60"
+    "metrics": "rmse;mae;conditional_rmse;conditional_mae;precision_at_90;precision_at_60"
   }
 }
