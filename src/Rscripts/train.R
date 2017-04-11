@@ -37,8 +37,8 @@ model_opts$trControl <- do.call(trainControl, model_opts$train_control_opts)
 model_opts$train_control_opts <- NULL
 
 ## ---- train-model ----
-stopifnot(x$Meas_ID == y$Meas_ID)
-stopifnot(x$rsv == y$rsv)
+stopifnot(all(x$Meas_ID == y$Meas_ID))
+stopifnot(all(x$rsv == y$rsv))
 
 x <- x %>%
   select(-Meas_ID, -rsv) %>%
