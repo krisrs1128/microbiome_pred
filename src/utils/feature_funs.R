@@ -55,6 +55,20 @@ relative_day <- function(melted_counts, ps) {
     dplyr::rename(relative_day = CC_RelDay)
 }
 
+imm_post <- function(melted_counts, ps) {
+  samples <- sample_data(ps)
+  samples$CC_RelDay <- na.locf(samples$CC_RelDay)
+  samples$imm_post <- ifelse(
+    samples$CC_RelDay >= & samples$CC_RelDay <= 3,
+    1,
+    0
+  )
+
+  melted_counts %>%
+    left_join(samples) %>%
+    select(Meas_ID, rsv, imm_post)
+}
+
 person_id <- function(melted_counts, ps) {
   samples <- sample_data(ps)
   subjects <- model.matrix(
