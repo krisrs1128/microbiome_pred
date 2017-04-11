@@ -1,6 +1,7 @@
 import luigi
 from luigi import configuration
 import subprocess
+import os.path
 
 import src.tasks.pipeline_funs as pf
 from src.tasks.train_test_split import TrainTestSplit
@@ -44,6 +45,13 @@ class GetFeatures(luigi.Task):
             self.features_conf
         ]
 
+        output_path = pf.output_name(
+            self.conf,
+            specifiers_list,
+            "features_",
+            "features"
+        )
+
         return_code = subprocess.call(
             [
                 "Rscript",
@@ -52,17 +60,23 @@ class GetFeatures(luigi.Task):
                 self.input()[0].open("r").name,
                 self.input()[1].open("r").name,
                 self.ps_path,
-                pf.output_name(
-                    self.conf,
-                    specifiers_list,
-                    "features_",
-                    "features"
-                )
+                output_path
             ]
         )
 
         if return_code != 0:
             raise ValueError("features.R failed")
+
+        mapping = pf.processed_data_dir(
+            self.conf.get("paths", "project_dir"),
+            os.path.join("features", "features.txt")
+        )
+
+        with open(mapping, "a") as f:
+            f.write(
+                ",".join(specifiers_list + [os.path.basename(output_path)]) + "\n"
+            )
+        f.close()
 
     def output(self):
         specifiers_list = [

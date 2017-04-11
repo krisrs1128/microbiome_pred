@@ -5,6 +5,7 @@
     "number": 5,
     "repeats": 1
   },
+  "importance": true,
   "tuneGrid": [
     {
       "max_depth": 1,

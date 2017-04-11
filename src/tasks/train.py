@@ -1,6 +1,7 @@
 import luigi
 from luigi import configuration
 import subprocess
+import os.path
 
 import src.tasks.pipeline_funs as pf
 from src.tasks.features import GetFeatures
@@ -86,6 +87,17 @@ class Train(luigi.Task):
 
         if return_code != 0:
             raise ValueError("train.R failed")
+
+        mapping = pf.processed_data_dir(
+            self.conf.get("paths", "project_dir"),
+            os.path.join("models", "models.txt")
+        )
+
+        with open(mapping, "a") as f:
+            f.write(
+                ",".join(specifiers_list + [os.path.basename(result_path)]) + "\n"
+            )
+        f.close()
 
     def output(self):
         specifiers_list = [
