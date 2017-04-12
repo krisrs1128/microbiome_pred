@@ -52,7 +52,7 @@ conditional_positive_fit <- function(fit_fun) {
 conditional_positive_model <- function(model_info) {
   new_model_info <- model_info
   new_model_info$fit <- conditional_positive_fit(model_info$fit)
-  new_model_info$label <- paste0("conditional_pos_", model_info$label)
+  new_model_info$label <- paste0("conditional_", model_info$label)
   new_model_info
 }
 
