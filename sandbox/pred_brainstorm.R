@@ -4,6 +4,7 @@
 ## Some experiments with visualizing the predictions from various models we've
 ## tried.
 
+library("readr")
 library("feather")
 library("plyr")
 library("dplyr")
@@ -20,9 +21,43 @@ scale_colour_discrete <- function(...)
 scale_fill_discrete <- function(...)
   scale_fill_brewer(palette = "Set2", ...)
 
+data_path <- file.path("data", "processed")
+x_mapping <- read_csv(
+  file.path(data_path, "features", "features.txt"),
+  col_names = FALSE
+)
+
+y_mapping <- read_csv(
+  file.path(data_path, "responses", "responses.txt"),
+  col_names = FALSE
+)
+
+model_mapping <- read_csv(
+  file.path(data_path, "models", "models.txt"),
+  col_names = FALSE
+)
+colnames(model_mapping) <- c(
+  "preprocess_conf",
+  "validation_prop",
+  "k_folds",
+  "features_conf",
+  "model_conf",
+  "basename"
+)
+
+cur_x_base <- x_mapping %>%
+  filter(
+    X1 == "conf/subsample_subject.json",
+    X2 == 0.2,
+    X3 == 3,
+    X4 == "conf/phylo_ix.json"
+  ) %>%
+  select(X5) %>%
+  unlist()
+
 ## Not the cv-fold data
-X_path <- "data/processed/features/features_772570831040539-all.feather"
-y_path <- "data/processed/responses/responses_616901990044369-all.feather"
+X_path <- file.path(data_path, "features", sprintf("%s-all.feather", cur_x_base))
+y_path <- file.path(data_path, "responses", sprintf("%s-all.feather", y_mapping$X4[1]))
 f_paths <- list.files("data/sandbox/", "f_bar*", full.names = TRUE)
 ps <- readRDS("data/raw/ps.RDS")
 X <- read_feather(X_path)
@@ -44,20 +79,32 @@ combined <- X %>%
   )
 combined$order <- factor(combined$order, levels = names(sort(table(combined$order), dec = TRUE)))
 
-f_list <- lapply(f_paths, read_feather)
+library("stringr")
+f_paths <- data_frame(path = f_paths) %>%
+  mutate(
+    basename = str_extract(path, "model_[0-9\\-\\.A-z]+")
+  ) %>%
+  mutate(
+    basename = gsub("feather", "RData", basename)
+  ) %>%
+  left_join(model_mapping)
+
+f_list <- lapply(f_paths$path, read_feather)
+
 for (i in seq_along(f_list)) {
   f_list[[i]]$ix <- i
-  f_list[[i]] <- f_list[[i]] %>%
-    rename(subject = subject_)
 
   if (grepl("_", f_list[[i]]$method[1])) {
-    f_list[[i]]$method <- gsub("conditional_pos", "conditional", f_list[[i]]$method)
     f_list[[i]] <- f_list[[i]] %>%
       separate(method, c("model_type", "algorithm"), sep = "_")
   } else {
+    f_list[[i]]$model_type <- "full"
+    f_list[[i]]$algorithm <- f_list[[i]]$method
+  }
+
+  if ("subject_" %in% colnames(f_list[[i]])) {
     f_list[[i]] <- f_list[[i]] %>%
-      mutate(model_type = "full") %>%
-      rename(algorithm = method)
+      rename(subject = subject_)
   }
 
   if ("Order" %in% colnames(f_list[[i]])) {
@@ -66,11 +113,13 @@ for (i in seq_along(f_list)) {
       mutate(order_top = recode_rare(order, 7))
   }
 
-  if (grepl("phylo_ix", f_paths[[i]])) {
+  if ("imm_post" %in% colnames(f_list[[i]])) {
+    f_list[[i]]$type <- "phylo_immpost"
+  } else if (grepl("phylo_ix", f_paths$path[i])) {
     f_list[[i]]$type <- "phylo_ix"
-  } else if (grepl("order", f_paths[[i]])) {
+  } else if (grepl("order", f_paths$path[i])) {
     f_list[[i]]$type <- "order"
-  } else if (grepl("rday", f_paths[[i]])) {
+  } else if (grepl("rday", f_paths$path[i])) {
     f_list[[i]]$type <- "rday"
   }
 }
@@ -82,7 +131,6 @@ for (i in seq_along(unique_types)) {
   f_data[[unique_types[[i]]]] <- do.call(rbind, f_list[types == unique_types[i]])
 }
 
-
 ###############################################################################
 ## Write data for d3 version
 ###############################################################################
@@ -90,11 +138,7 @@ glimpse(combined)
 keep_rsvs <- sample(unique(combined$rsv), 50)
 combined_thinned <- combined %>%
   select(-starts_with("phylo_coord"), -count, -binarized) %>%
-  filter(
-    relative_day > -100,
-    relative_day < 50,
-    rsv %in% keep_rsvs
-  ) %>%
+  filter(rsv %in% keep_rsvs) %>%
   arrange(rsv, relative_day)
 combined_thinned$order <- droplevels(combined_thinned$order)
 combined_thinned$order_top <- droplevels(combined_thinned$order_top)
@@ -123,7 +167,7 @@ cat(
 )
 
 f_combined <- list()
-for (var_type in c("phylo_ix", "order", "rday")) {
+for (var_type in c("phylo_ix", "phylo_immpost", "order", "rday")) {
   if ("order" %in% colnames(f_data[[var_type]])) {
     f_data[[var_type]] <- f_data[[var_type]] %>%
       filter(order %in% levels(combined_thinned$order))
