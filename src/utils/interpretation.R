@@ -45,7 +45,7 @@ partial_dependence <- function(model, x, z) {
     }
     xz <- cbind(x[i, ], z)[varnames]
     preds <- try(predict(model, xz, type = "prob")[, 2])
-    if (class(pred) == "try-error") {
+    if (class(preds) == "try-error") {
       preds <- predict(model, xz)
     }
     f_bar[i] <- mean(preds)
