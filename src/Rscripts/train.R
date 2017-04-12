@@ -17,6 +17,7 @@ model_conf <- args[[4]]
 
 ## ---- libraries ----
 library("caret")
+library("plyr")
 library("dplyr")
 library("feather")
 library("jsonlite")
@@ -46,8 +47,7 @@ x <- x %>%
 
 y <- y %>%
   select(count) %>%
-  unlist() %>%
-  as.numeric()
+  unlist(use.names = FALSE)
 
 cl <- makeCluster(min(2, detectCores()))
 registerDoParallel(cl)

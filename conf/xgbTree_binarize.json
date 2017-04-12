@@ -6,6 +6,7 @@
     "repeats": 1
   },
   "importance": true,
+  "objective": "binary:logistic",
   "tuneGrid": [
     {
       "max_depth": 1,
