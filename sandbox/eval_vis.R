@@ -4,11 +4,25 @@ library("plyr")
 library("dplyr")
 library("ggplot2")
 
+model_mapping <- read_csv("data/processed/models/models.txt", col_names = FALSE)
+colnames(model_mapping) <- c(
+  "preprocess_conf",
+  "validation_prop",
+  "k_folds",
+  "features_conf",
+  "model_conf",
+  "basename"
+)
+
 eval_paths <- list.files("data/processed/eval", "cv*", full.names = TRUE)
 eval_data <- do.call(rbind, lapply(eval_paths, read_feather))
-eval_data$model_type <- "full"
 
-eval_data$model_type[grep("pos", eval_data$model_conf)] <- "conditional"
+eval_data %>%
+  left_join(model_mapping) %>%
+  glimpse()
+
+eval_data$mode_type <- "full"
+eval_data$model_type[grep("conditional", eval_data$model_conf)] <- "conditional"
 eval_data$model_type[grep("binarize", eval_data$model_conf)] <- "binarized"
 
 prec <- eval_data %>%
