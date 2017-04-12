@@ -147,6 +147,7 @@ pca_features <- function(melted_counts, ps, k = 3) {
   pca_x <- svd(x_mat)
   evals <- pca_x$d
   x_coarse <- pca_x$u[, 1:k] %*% diag(evals[1:k]) %*% t(pca_x$v[, 1:k])
+  colnames(x_coarse) <- colnames(x_mat)
 
   ## Melt back into features format
   pca_imputed <- cbind(
