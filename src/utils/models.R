@@ -58,7 +58,7 @@ conditional_positive_model <- function(model_info) {
 
 binarize_fit <- function(fit_fun, threshold = 0) {
   function(x, y, wts, param, lev, last, classProbs, ...) {
-    fit_fun(x, y > threshold, wts, param, lev, last, classProbs, ...)
+    fit_fun(x, as.factor(y > threshold), wts, param, lev, last, classProbs, ...)
   }
 }
 
