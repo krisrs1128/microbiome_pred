@@ -71,6 +71,7 @@ imm_post <- function(melted_counts, ps) {
 
 person_id <- function(melted_counts, ps) {
   samples <- sample_data(ps)
+  samples$Subject <- droplevels(samples$Subject)
   subjects <- model.matrix(
     ~ subject_ - 1,
     data = data.frame("subject_" = samples$Subject)

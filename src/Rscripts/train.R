@@ -49,7 +49,7 @@ y <- y %>%
   unlist(use.names = FALSE)
 
 if (grepl("binarize", model_conf)) {
-  y <- as.factor(y)
+  y <- as.factor(y > 0)
 }
 if (grepl("conditional", model_conf)) {
   pos_ix <- y > 0
