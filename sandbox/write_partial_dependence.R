@@ -55,8 +55,7 @@ combined <- X %>%
     binarized_count = ifelse(count > 0, 0, 1)
   )
 
-subjects <- colnames(X)[grep("subject_", colnames(X))]
-subjects <- gsub("subject_", "", subjects)
+subjects <- c("AAD", "AAF", "AAI", "AAN")
 
 if (dependence_type == "time") {
   ## Get partial dependence, after averaging out phylogenetic features
