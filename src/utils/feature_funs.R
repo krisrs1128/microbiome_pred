@@ -144,10 +144,9 @@ pca_features <- function(melted_counts, ps, k = 3) {
   x_mat[is.na(x_mat)] <- mean(x_mat, na.rm = TRUE)
 
   ## Create a PCA approximation
-  pca_x <- princomp(x_mat)
-  evals <- pca_x$sdev
-  evals[-seq_len(k)] <- 0
-  x_coarse <- pca_x$scores %*% diag(evals) %*% t(pca_x$loadings)
+  pca_x <- svd(x_mat)
+  evals <- pca_x$d
+  x_coarse <- pca_x$u[, 1:k] %*% diag(evals[1:k]) %*% t(pca_x$v[, 1:k])
 
   ## Melt back into features format
   pca_imputed <- cbind(
