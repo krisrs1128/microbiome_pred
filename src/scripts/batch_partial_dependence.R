@@ -1,4 +1,8 @@
 
+library("readr")
+library("plyr")
+library("dplyr")
+
 f <- readLines("src/scripts/f_bar.batch")
 
 model_mapping <- read_csv("data/processed/models/models.txt", col_names = FALSE)
