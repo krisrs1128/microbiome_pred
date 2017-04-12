@@ -23,7 +23,6 @@ library("feather")
 library("jsonlite")
 library("tools")
 library("doParallel")
-source("src/utils/models.R")
 
 ## ---- train-model ----
 x <- read_feather(x_path)
@@ -49,9 +48,26 @@ y <- y %>%
   select(count) %>%
   unlist(use.names = FALSE)
 
+if (grepl("binarize", model_conf)) {
+  y <- as.factor(y)
+}
+if (grepl("conditional", model_conf)) {
+  pos_ix <- y > 0
+  x <- x[pos_ix, ]
+  y <- y[pos_ix]
+}
+
 cl <- makeCluster(min(2, detectCores()))
 registerDoParallel(cl)
 model_res <- do.call(train, c(list("x" = x, "y" = y), model_opts))
+
+if (grepl("binarize", model_conf)) {
+  model_res$model_type <- "binarize"
+} else if (grepl("conditional", model_conf)) {
+  model_res$model_type <- "conditional"
+} else {
+  model_res$model_type <- "full"
+}
 
 ## ---- save-result ----
 dir.create(dirname(output_path), recursive = TRUE)

@@ -1,5 +1,5 @@
 {
-  "method": "conf/rpart_binarize.RData",
+  "method": "rpart",
   "train_control_opts": {
     "method": "repeatedcv",
     "number": 5,
