@@ -70,7 +70,7 @@ if (dependence_type == "time") {
 } else if (dependence_type == "phylo_ix") {
   ## Get partial dependence, after averaging out phylogenetic features
   x_grid <- expand.grid(
-    "phylo_ix" = seq(min(X$phylo_ix), max(X$phylo_ix), length.out = 750),
+    "phylo_ix" = seq(min(X$phylo_ix), max(X$phylo_ix), length.out = 250),
     "subject_" = subjects
   )
   output_base <- "data/sandbox/f_bar_phylo_ix_%s"
@@ -78,6 +78,14 @@ if (dependence_type == "time") {
   ## Get partial dependence, after averaging everything except order and subject
   x_grid <- expand.grid(
     "Order" = unique(combined$order),
+    "subject_" = subjects
+  )
+  output_base <- "data/sandbox/f_bar_order_%s"
+} else if (dependence_type == "phylo_immpost") {
+  ## Get partial dependence, after averaging everything except phylogeny, time, and subject
+  x_grid <- expand.grid(
+    "phylo_ix" = seq(min(X$phylo_ix), max(X$phylo_ix), length.out = 250),
+    "imm_post" = c(0, 1),
     "subject_" = subjects
   )
   output_base <- "data/sandbox/f_bar_order_%s"
