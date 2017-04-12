@@ -88,7 +88,7 @@ if (dependence_type == "time") {
     "imm_post" = c(0, 1),
     "subject_" = subjects
   )
-  output_base <- "data/sandbox/f_bar_order_%s"
+  output_base <- "data/sandbox/f_bar_phylo_immpost_%s"
 } else {
   stop(sprintf("Partial dependence type %s not found", dependence_type))
 }
