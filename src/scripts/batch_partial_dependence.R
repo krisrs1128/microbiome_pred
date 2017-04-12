@@ -22,7 +22,7 @@ model_paths <- model_mapping %>%
 feature_types <- c(
   "phylo_ix",
   "time",
-  "order"
+  "order",
   "phylo_immpost"
 )
 
