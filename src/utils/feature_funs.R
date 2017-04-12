@@ -161,5 +161,5 @@ pca_features <- function(melted_counts, ps, k = 3) {
   result$pca_imputed[is.na(result$pca_imputed)] <- mean(result$pca_imputed, na.rm = TRUE)
   result %>%
     select(Meas_ID, rsv, pca_imputed) %>%
-    as_data_frame)
+    as_data_frame
 }
