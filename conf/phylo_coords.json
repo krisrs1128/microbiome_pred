@@ -1,4 +1,3 @@
-
 {
   "taxa_features": {
   },
@@ -6,6 +5,8 @@
     "k": 3
   },
   "relative_day": {
+  },
+  "imm_post": {
   },
   "person_id": {
   }
