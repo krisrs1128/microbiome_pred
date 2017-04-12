@@ -5,7 +5,7 @@
     "validation_prop": 0.2,
     "k_folds": 3,
     "features": "conf/phylo_ix.json",
-    "model": "conf/rpart_pos.json",
+    "model": "conf/rpart_conditional.json",
     "metrics": "rmse;mae;conditional_rmse;conditional_mae;precision_at_90;precision_at_60"
   },
   "exper_2": {
@@ -32,7 +32,7 @@
     "validation_prop": 0.2,
     "k_folds": 3,
     "features": "conf/phylo_ix.json",
-    "model": "conf/rf_pos.json",
+    "model": "conf/rf_conditional.json",
     "metrics": "rmse;mae;conditional_rmse;conditional_mae;precision_at_90;precision_at_60"
   },
   "exper_5": {
@@ -59,7 +59,7 @@
     "validation_prop": 0.2,
     "k_folds": 3,
     "features": "conf/phylo_ix.json",
-    "model": "conf/xgbTree_pos.json",
+    "model": "conf/xgbTree_conditional.json",
     "metrics": "rmse;mae;conditional_rmse;conditional_mae;precision_at_90;precision_at_60"
   },
   "exper_8": {
@@ -86,7 +86,7 @@
     "validation_prop": 0.2,
     "k_folds": 3,
     "features": "conf/pca.json",
-    "model": "conf/rf_pos.json",
+    "model": "conf/rf_conditional.json",
     "metrics": "rmse;mae;conditional_rmse;conditional_mae;precision_at_90;precision_at_60"
   },
   "exper_11": {
@@ -113,7 +113,7 @@
     "validation_prop": 0.2,
     "k_folds": 3,
     "features": "conf/phylo_coords.json",
-    "model": "conf/rf_pos.json",
+    "model": "conf/rf_conditional.json",
     "metrics": "rmse;mae;conditional_rmse;conditional_mae;precision_at_90;precision_at_60"
   },
   "exper_14": {
