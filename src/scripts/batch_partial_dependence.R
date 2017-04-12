@@ -23,7 +23,7 @@ feature_types <- c(
   "phylo_ix",
   "time",
   "order"
-  "phylo_time"
+  "phylo_immpost"
 )
 
 for (i in seq_along(model_paths)) {
