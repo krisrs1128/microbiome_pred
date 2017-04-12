@@ -90,16 +90,16 @@ f_paths <- data_frame(path = f_paths) %>%
   left_join(model_mapping)
 
 f_list <- lapply(f_paths$path, read_feather)
-
 for (i in seq_along(f_list)) {
   f_list[[i]]$ix <- i
 
-  if (grepl("_", f_list[[i]]$method[1])) {
-    f_list[[i]] <- f_list[[i]] %>%
-      separate(method, c("model_type", "algorithm"), sep = "_")
+  f_list[[i]]$algorithm <- f_list[[i]]$method
+  if (grepl("binarize", f_paths$model_conf[i])) {
+    f_list[[i]]$model_type <- "binarize"
+  } else if (grepl("conditional", f_paths$model_conf[i])) {
+    f_list[[i]]$model_type <- "conditional"
   } else {
     f_list[[i]]$model_type <- "full"
-    f_list[[i]]$algorithm <- f_list[[i]]$method
   }
 
   if ("subject_" %in% colnames(f_list[[i]])) {
@@ -113,7 +113,7 @@ for (i in seq_along(f_list)) {
       mutate(order_top = recode_rare(order, 7))
   }
 
-  if ("imm_post" %in% colnames(f_list[[i]])) {
+  if (grepl("phylo_immpost", f_paths$path[i])) {
     f_list[[i]]$type <- "phylo_immpost"
   } else if (grepl("phylo_ix", f_paths$path[i])) {
     f_list[[i]]$type <- "phylo_ix"
@@ -139,6 +139,7 @@ keep_rsvs <- sample(unique(combined$rsv), 50)
 combined_thinned <- combined %>%
   select(-starts_with("phylo_coord"), -count, -binarized) %>%
   filter(rsv %in% keep_rsvs) %>%
+  filter(subject %in% c("AAF", "AAD")) %>%
   arrange(rsv, relative_day)
 combined_thinned$order <- droplevels(combined_thinned$order)
 combined_thinned$order_top <- droplevels(combined_thinned$order_top)

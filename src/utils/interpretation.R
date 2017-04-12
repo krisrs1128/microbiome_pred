@@ -44,7 +44,11 @@ partial_dependence <- function(model, x, z) {
       cat(sprintf("Computing dependence for grid point %s / %s\n", i, n_new))
     }
     xz <- cbind(x[i, ], z)[varnames]
-    f_bar[i] <- mean(predict(model, xz))
+    preds <- try(predict(model, xz, type = "prob")[, 2])
+    if (class(pred) == "try-error") {
+      preds <- predict(model, xz)
+    }
+    f_bar[i] <- mean(preds)
   }
   f_bar
 }
