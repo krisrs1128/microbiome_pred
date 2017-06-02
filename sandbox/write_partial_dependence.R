@@ -83,6 +83,7 @@ if (dependence_type == "time") {
 } else if (dependence_type == "phylo_immpost") {
   ## Get partial dependence, after averaging everything except phylogeny, time, and subject
   x_grid <- expand.grid(
+    "Order" = unique(combined$order),
     "phylo_ix" = seq(min(X$phylo_ix), max(X$phylo_ix), length.out = 250),
     "imm_post" = c(0, 1),
     "subject_" = subjects
