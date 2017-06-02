@@ -60,5 +60,19 @@ ggplot(eval_data %>%
   facet_wrap(~metric, scales = "free_y")
 
 model_mapping
-ggplot(imp) +
-  geom_point(aes(x = variable, y = value))
+imp <- lapply(model_mapping$basename,
+              function(x) {
+                varImp(get(load(sprintf("data/processed/models/%s", x))))$importance
+              })
+
+names(imp) <- model_mapping$basename
+imp <- lapply(imp, function(x) data_frame(feature = rownames(x), value = x[, 1]))
+m_imp <- melt(imp) %>%
+  rename(basename = L1) %>%
+  left_join(eval_data)
+
+
+ggplot(m_imp) +
+  geom_point(aes(x = reorder(feature, -value, median), y = value)) +
+  facet_grid(algorithm~features_conf, scale = "free_x") +
+  theme(axis.text.x = element_text(angle = -90, hjust = 0))
