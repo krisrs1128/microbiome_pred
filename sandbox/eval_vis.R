@@ -1,8 +1,7 @@
 
+library("caret")
+library("tidyverse")
 library("feather")
-library("plyr")
-library("dplyr")
-library("ggplot2")
 
 model_mapping <- read_csv("data/processed/models/models.txt", col_names = FALSE)
 colnames(model_mapping) <- c(
