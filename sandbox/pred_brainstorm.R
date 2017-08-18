@@ -169,14 +169,18 @@ cat(
 
 f_combined <- list()
 for (var_type in c("phylo_ix", "phylo_immpost", "order", "rday")) {
+  f_data[[var_type]] <- f_data[[var_type]] %>%
+    filter(subject %in% unique(combined_thinned$subject))
   if ("order" %in% colnames(f_data[[var_type]])) {
     f_data[[var_type]] <- f_data[[var_type]] %>%
       filter(order %in% levels(combined_thinned$order))
   }
-  if (var_type != "rday") {
-    cur_f <- dlply(f_data[[var_type]], c("ix", "subject"))
-  } else {
+  if (var_type == "rday") {
     cur_f <- dlply(f_data[[var_type]], c("ix", "subject", "order_top"))
+  } else if (var_type == "phylo_immpost") {
+    cur_f <- dlply(f_data[[var_type]], c("ix", "subject", "imm_post"))
+  } else {
+    cur_f <- dlply(f_data[[var_type]], c("ix", "subject"))
   }
   names(cur_f) <- NULL
   f_combined[[var_type]] <- cur_f

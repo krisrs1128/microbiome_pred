@@ -15,7 +15,7 @@ The success of a theory is best judged from its ability to predict
 
 This comment appeared in D.R. Cox's discussion of \cite{breiman2001statistical},
 and it will serve as the point of departure in our effort to better understand
-the microbiome using machine learning models. The idea is that microbiome
+the microbiome using regression models. The idea is that microbiome
 researchers are trying to get their hands on a theory\footnote{While I'm quoting
   things, here's another relevant one: ``There is nothing so practical as a good
   theory'' -- Kurt Lewin} of the bacterial ecology and the associated medical
@@ -39,18 +39,62 @@ theory-building,
   thought of differently than the curves / surfaces learned by, say, smoothing
   splines or PCA, for example, except perhaps they may be somewhat more
   complicated to understand directly.
-\item Characterizing Uncertainty: The test error in a machine learning algorithm
-  gives a sense of how powerful the theory is / how much intrinsic noise there
-  is the system under study.
+\item Characterizing Uncertainty: The test error in a supervised learning
+  algorithm gives a sense of how powerful the theory is / how much intrinsic
+  noise there is the system under study.
 \end{itemize}
 
 \section{Methods}
 
+The novelty in our application of regression techniques to the microbiome is
+that we reverse the usual designation of feature and response. That is, while it
+is standard to use vectors bacterial counts to predict sample labels (e.g.,
+pre vs. post perturbation), we argue that there value in treating these
+bacterial counts as a response, leveraging characteristics about the underlying
+sample and taxonomy as features. However, to realize the benefits of this switch
+in perspective, some care must be taken in setting up the analysis -- a blind
+application of black-box machine learning methods is unlikely to yield any real
+value.
+
+\subsection{Formulation}
+
+The swapped problem is harder than the original one for several reasons, most notably,
+
+\begin{align}
+\item
+\item 
+\end{align}
+
+Why should we bother with this approach, considering the increased complexity?
+There are three potential benefits that make the additional effort worthwhile,
+* nonlinearity
+* explicit relation with what we interpret
+* evaluation
+
+-- why we need to be careful
+* Predicting counts (not categories)
+* transformation
+* Hurdle Modeling
+
+-- what methods we use
+* Prediction techniques
+- Tree based methods
+- Ensembling
+- Evaluation metrics
+
 \subsection{Features}
+- PCA based
+- Phylo coordinates
+- Phylo ix
+- Subject
+- Time
+- Taxonomic order
 
 \subsection{Interpretation}
+- Partial dependence plots
 
 \subsection{Infrastructure}
+- Data engineering and luigi
 
 \section{Case Studies}
 
